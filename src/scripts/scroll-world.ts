@@ -5,9 +5,10 @@
  *   ([data-chapter]) indica su tramo con data-video-start / data-video-end.
  * - Carga el vídeo como Blob (siempre se puede saltar a cualquier punto aunque
  *   el servidor no admita peticiones por rangos).
- * - Móvil/tablet (≤ 1024 px o táctil): 540p con todos los fotogramas clave
- *   (cada salto decodifica un solo fotograma) y saltos ajustados a fotograma exacto.
- *   Escritorio: 1080p.
+ * - Móvil en vertical: recorte vertical del máster (608×1080) con todos los
+ *   fotogramas clave; es la franja que se ve en pantalla, sin ampliar un vídeo pequeño.
+ *   Móvil/tablet en horizontal (≤ 1024 px o táctil): 540p con todos los fotogramas clave.
+ *   Escritorio: 1080p. En móvil los saltos se ajustan a fotograma exacto.
  * - Coalesce de seeks: nunca pide un nuevo currentTime mientras el decodificador
  *   sigue buscando (evita congelaciones en móviles al hacer scroll rápido).
  * - iOS: mantiene el póster hasta que el vídeo pinta un fotograma y "ceba" el
@@ -91,30 +92,46 @@ export function mountScrollWorld(root: HTMLElement) {
 		} catch {}
 	}
 
+	/** Móvil en vertical: recorte vertical a resolución completa; móvil/tablet en horizontal: 540p; escritorio: 1080p. */
+	const portrait = window.matchMedia('(orientation: portrait)');
+	function pickSrc() {
+		if (isMobile() && portrait.matches) return video!.dataset.srcPortrait || video!.dataset.srcMobile;
+		return isMobile() ? video!.dataset.srcMobile : video!.dataset.srcDesktop;
+	}
+
+	let loadedSrc = '';
+	let blobUrl = '';
+	video.muted = true;
+	video.playsInline = true;
+	video.addEventListener('loadedmetadata', () => {
+		ready = true;
+		cur = target;
+		try {
+			video!.currentTime = target;
+		} catch {}
+		if (userReady) prime();
+	});
+	// Solo se oculta el póster cuando ya hay un fotograma pintado
+	video.addEventListener('seeked', () => root.classList.add('has-video'));
+	video.addEventListener('error', () => root.classList.remove('has-video'));
+
 	function load() {
-		const src = isMobile() ? video!.dataset.srcMobile : video!.dataset.srcDesktop;
-		if (!src) return;
+		const src = pickSrc();
+		if (!src || src === loadedSrc) return;
+		loadedSrc = src;
 		const attach = (url: string) => {
-			video!.muted = true;
-			video!.playsInline = true;
+			if (loadedSrc !== src) return; // se pidió otro vídeo mientras se descargaba este
+			ready = false;
+			if (blobUrl) URL.revokeObjectURL(blobUrl);
+			blobUrl = url.startsWith('blob:') ? url : '';
 			video!.src = url;
-			video!.addEventListener('loadedmetadata', () => {
-				ready = true;
-				cur = target;
-				try {
-					video!.currentTime = target;
-				} catch {}
-				if (userReady) prime();
-			});
-			// Solo se oculta el póster cuando ya hay un fotograma pintado
-			video!.addEventListener('seeked', () => root.classList.add('has-video'), { once: true });
-			video!.addEventListener('error', () => root.classList.remove('has-video'));
 		};
 		fetch(src)
 			.then((r) => (r.ok ? r.blob() : Promise.reject(new Error(String(r.status)))))
 			.then((blob) => attach(URL.createObjectURL(blob)))
 			.catch(() => attach(src));
 	}
+
 
 	window.addEventListener(
 		'scroll',
@@ -127,6 +144,7 @@ export function mountScrollWorld(root: HTMLElement) {
 		// En móviles la barra de direcciones cambia el alto al hacer scroll: se ignora
 		if (coarse && window.innerWidth === laidOutW) return;
 		layout();
+		if (!reduce && loadedSrc) load(); // al girar el móvil puede tocar otra versión del vídeo
 	});
 	window.addEventListener('orientationchange', layout);
 	window.addEventListener('load', layout);

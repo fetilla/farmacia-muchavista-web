@@ -23,7 +23,7 @@ No hace falta tocar componentes. Consulta [`src/config/README.md`](src/config/RE
 ## Estructura
 
 ```text
-public/video/          vídeo de fondo (1080p escritorio, 540p móvil con todos los fotogramas clave) y póster
+public/video/          vídeo de fondo: 1080p escritorio, vertical 608×1080 para móvil en vertical, 540p para móvil/tablet en horizontal, y póster
 src/config/            YAML de configuración (contacto, horario, marcas, secciones)
 src/content.config.ts  carga y validación de los YAML
 src/assets/logo.svg    logo vectorial (trazado del PNG original)
