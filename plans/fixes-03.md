@@ -132,5 +132,5 @@ Fichero: `src/components/Marcas.astro`
 
 ### Pendiente o mejorable
 
-- En móvil, el enlace de Kiokids lleva a **Mustela**, la primera marca de "Bebé y maternidad", porque el enlace solo indica la categoría. Para que lleve exactamente a Kiokids, se podría añadir `enlace.marca` en `secciones.yaml`.
+- [x] **Enlace de Kiokids → Kiokids:** antes llevaba a Mustela, la primera marca de la categoría, porque el enlace solo indicaba la categoría. Se añade el campo opcional `enlace.marca` (`content.config.ts`, `secciones.yaml`, `src/config/README.md`). En escritorio aplica el filtro y además lleva a la marca; en móvil lleva directamente a la marca. En los dos casos muestra su descripción. El build falla si la marca no existe en `marcas.yaml`.
 - Falta probarlo en un móvil real, sobre todo el deslizamiento con el dedo en iOS Safari.

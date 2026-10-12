@@ -553,21 +553,23 @@ const slug = (s: string) =>
 		}
 		buttons.forEach((btn) => btn.addEventListener('click', () => setFilter(btn.dataset.filter || 'todas')));
 
-		// Enlaces desde otras secciones con una categoría (p. ej. la noticia de Kiokids):
-		// en escritorio aplican el filtro; en móvil, sin filtros, llevan a la primera marca de esa categoría
-		document.querySelectorAll<HTMLAnchorElement>('[data-filtro-marca]').forEach((a) =>
+		// Enlaces desde otras secciones (p. ej. la noticia de Kiokids). En escritorio aplican el filtro
+		// de su categoría; en móvil no hay filtros. Después llevan el carrusel hasta la marca indicada
+		// (o la primera de la categoría) y muestran su descripción.
+		document.querySelectorAll<HTMLAnchorElement>('[data-filtro-marca], [data-ir-a-marca]').forEach((a) =>
 			a.addEventListener('click', () => {
 				const value = slugify(a.dataset.filtroMarca || '');
 				const filtersVisible = buttons[0] && getComputedStyle(buttons[0].parentElement!).display !== 'none';
-				if (filtersVisible && buttons.some((b) => b.dataset.filter === value)) {
-					setFilter(value);
-					return;
-				}
-				setFilter('todas');
-				const first = items.find((it) => it.dataset.categoria === value);
-				if (!first) return;
-				track!.scrollTo({ left: first.offsetLeft - track!.offsetLeft, behavior: reduce() ? 'auto' : 'smooth' });
-				select(first.querySelector<HTMLButtonElement>('[data-marca]'));
+				setFilter(filtersVisible && buttons.some((b) => b.dataset.filter === value) ? value : 'todas');
+				const nombre = a.dataset.irAMarca;
+				const target = nombre
+					? items.find((it) => it.querySelector<HTMLElement>('[data-marca]')?.dataset.nombre === nombre)
+					: !filtersVisible && value
+						? items.find((it) => it.dataset.categoria === value)
+						: undefined;
+				if (!target || target.hidden) return;
+				track!.scrollTo({ left: target.offsetLeft - track!.offsetLeft, behavior: reduce() ? 'auto' : 'smooth' });
+				select(target.querySelector<HTMLButtonElement>('[data-marca]'));
 			}),
 		);
 

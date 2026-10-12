@@ -1,6 +1,7 @@
 ---
 /** Rejilla de tarjetas (servicios, promociones, actualidad) desde secciones.yaml */
 import Icon from './Icon.astro';
+import { getMarcas } from '../lib/config';
 
 interface Tarjeta {
 	titulo: string;
@@ -11,7 +12,7 @@ interface Tarjeta {
 	detalle?: { titulo: string; texto: string };
 	descuento?: string;
 	precio?: { antes: string; ahora: string };
-	enlace?: { texto: string; seccion: string; categoria?: string };
+	enlace?: { texto: string; seccion: string; categoria?: string; marca?: string };
 }
 
 interface Props {
@@ -21,6 +22,14 @@ interface Props {
 
 const { tarjetas, variant = 'service' } = Astro.props;
 const uid = `${variant}-${Math.random().toString(36).slice(2, 7)}`;
+// Un enlace a una marca debe apuntar a una marca que exista en marcas.yaml
+const { marcas } = await getMarcas();
+for (const t of tarjetas) {
+	const m = t.enlace?.marca;
+	if (m && !marcas.some((x) => x.nombre === m)) {
+		throw new Error(`src/config/secciones.yaml: el enlace de "${t.titulo}" apunta a la marca "${m}", que no está en marcas.yaml`);
+	}
+}
 const fmt = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 const Tag = variant === 'news' ? 'article' : 'div';
 const slug = (s: string) =>
@@ -74,6 +83,7 @@ const slug = (s: string) =>
 								class="card__link"
 								href={`#${t.enlace.seccion}`}
 								data-filtro-marca={t.enlace.categoria ? slug(t.enlace.categoria) : undefined}
+								data-ir-a-marca={t.enlace.marca}
 							>
 								{t.enlace.texto}
 								<Icon name="arrow-right" size={18} />

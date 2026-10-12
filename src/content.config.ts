@@ -196,6 +196,7 @@ const tarjeta = z.object({
 			texto: z.string(),
 			seccion: z.enum(['inicio', 'nosotros', 'servicios', 'marcas', 'promociones', 'actualidad', 'contacto']),
 			categoria: z.string().optional(),
+			marca: z.string().optional(),
 		})
 		.optional(),
 	texto: z.string().optional(),

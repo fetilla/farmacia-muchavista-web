@@ -12,8 +12,9 @@
 #                 detalle (opcional): { titulo, texto } añade un botón "Más información"
 #                 descuento (opcional): texto destacado, p. ej. "-20 %"
 #                 precio (opcional): { antes, ahora } muestra el precio anterior tachado
-#                 enlace (opcional): { texto, seccion, categoria } enlace a otra sección
-#                   (con "categoria", abre Marcas con ese filtro)
+#                 enlace (opcional): { texto, seccion, categoria, marca } enlace a otra sección
+#                   (con "categoria", abre Marcas con ese filtro; con "marca", lleva a esa marca
+#                   en el carrusel y muestra su descripción)
 #   nota:         texto pequeño bajo las tarjetas (p. ej. condiciones de las promociones)
 #                 icono: nombre de un icono de Phosphor (https://phosphoricons.com), p. ej. "heartbeat"
 #   video:        tramo del vídeo de fondo en segundos { desde, hasta }
@@ -125,7 +126,7 @@ actualidad:
     - titulo: "Nueva marca en Bebé y maternidad: Kiokids"
       texto: "Incorporamos Kiokids, con accesorios de puericultura para el día a día del bebé: alimentación, dentición, baño e higiene."
       icono: "baby"
-      enlace: { texto: "Ver en Marcas", seccion: "marcas", categoria: "Bebé y maternidad" }
+      enlace: { texto: "Ver en Marcas", seccion: "marcas", categoria: "Bebé y maternidad", marca: "Kiokids" }
   video: { desde: 25.21, hasta: 30.25 }
   provisional: false
 

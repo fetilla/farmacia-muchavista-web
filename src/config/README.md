@@ -60,7 +60,7 @@ Campos opcionales de las tarjetas:
 - `descuento`: texto destacado de una promoción, por ejemplo `"-20 %"`.
 - `precio: { antes, ahora }`: muestra el precio anterior tachado y el nuevo, por ejemplo `{ antes: "29,90 €", ahora: "19,90 €" }`.
 - `etiqueta`: texto pequeño, por ejemplo la vigencia `"Hasta el 31 de octubre"`.
-- `enlace: { texto, seccion, categoria }`: enlace a otra sección. Con `seccion: "marcas"` y `categoria`, abre Marcas con ese filtro.
+- `enlace: { texto, seccion, categoria, marca }`: enlace a otra sección. Con `seccion: "marcas"` y `categoria`, abre Marcas con ese filtro (en escritorio). Con `marca` (escrita igual que en `marcas.yaml`), además lleva el carrusel hasta esa marca y muestra su descripción.
 
 `nota` (en una sección) es un texto pequeño bajo las tarjetas, por ejemplo las condiciones de las promociones.
 
