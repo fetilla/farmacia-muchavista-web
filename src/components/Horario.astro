@@ -52,6 +52,14 @@ const horario = await getHorario();
 			))
 		}
 	</div>
+	{
+		horario.temporadas.length > 1 && (
+			<button type="button" class="horario__more" aria-expanded="false" data-horario-more hidden>
+				<span data-horario-more-label>Ver otros horarios</span>
+				<Icon name="caret-down" size={18} class="horario__more-icon" />
+			</button>
+		)
+	}
 </div>
 
 <style>
@@ -188,6 +196,50 @@ const horario = await getHorario();
 		display: none;
 	}
 
+	/* Móvil: solo la temporada vigente; el resto con "Ver otros horarios" */
+	.horario__more {
+		display: none;
+	}
+
+	@media (max-width: 639px) {
+		.horario__season {
+			padding: var(--s-200);
+		}
+
+		.horario.is-collapsible:not(.is-expanded) .horario__season:not(.is-current) {
+			display: none;
+		}
+
+		.horario.is-collapsible .horario__more {
+			justify-self: start;
+			display: inline-flex;
+			align-items: center;
+			gap: var(--s-50);
+			min-height: 44px;
+			padding: 0;
+			border: 0;
+			background: none;
+			color: var(--brand);
+			font: inherit;
+			font-size: 0.875rem;
+			line-height: 1.25rem;
+			font-weight: 700;
+			cursor: pointer;
+		}
+
+		.horario--dark .horario__more {
+			color: var(--sea-light);
+		}
+
+		.horario__more :global(.horario__more-icon) {
+			transition: transform 0.5s var(--ease);
+		}
+
+		.horario__more[aria-expanded='true'] :global(.horario__more-icon) {
+			transform: rotate(180deg);
+		}
+	}
+
 	/* Versión sobre fondo oscuro (pie) */
 	.horario--dark .horario__season {
 		background: rgb(251 253 255 / 0.06);
@@ -268,4 +320,18 @@ const horario = await getHorario();
 
 	update();
 	setInterval(update, 60_000);
+
+	// Plegar las temporadas no vigentes (solo afecta en móvil, por CSS)
+	document.querySelectorAll<HTMLElement>('[data-horario]').forEach((block) => {
+		const more = block.querySelector<HTMLButtonElement>('[data-horario-more]');
+		const label = block.querySelector<HTMLElement>('[data-horario-more-label]');
+		if (!more || !label || !block.querySelector('[data-season].is-current')) return;
+		block.classList.add('is-collapsible');
+		more.hidden = false;
+		more.addEventListener('click', () => {
+			const open = block.classList.toggle('is-expanded');
+			more.setAttribute('aria-expanded', String(open));
+			label.textContent = open ? 'Ver solo el horario actual' : 'Ver otros horarios';
+		});
+	});
 </script>

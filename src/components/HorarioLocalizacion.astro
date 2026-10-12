@@ -63,6 +63,28 @@ const contacto = await getContacto();
 		}
 	}
 
+	@media (max-width: 639px) {
+		.info-card {
+			gap: var(--s-200);
+			padding: var(--s-200);
+			border-radius: 16px;
+		}
+		.info-card__part {
+			gap: var(--s-100);
+		}
+		.info-card__part--location {
+			padding-top: var(--s-200);
+		}
+		.info-card__title {
+			font-size: 1.25rem;
+			line-height: 1.75rem;
+		}
+		.info-card__address {
+			font-size: 1rem;
+			line-height: 1.5rem;
+		}
+	}
+
 	.info-card__part {
 		display: grid;
 		align-content: start;

@@ -35,58 +35,75 @@ const slug = (s: string) =>
 	{
 		tarjetas.map((t, i) => (
 			<li class="reveal" style={`transition-delay:${(i % 3) * 100}ms`} data-card>
-				<Tag class="card">
-					{t.icono && (
-						<span class="card__icon">
-							<Icon name={t.icono} size={24} />
-						</span>
-					)}
-					{t.descuento && <p class="card__discount">{t.descuento}</p>}
-					{t.precio && (
-						<p class="card__price">
-							<span class="sr-only">Antes {t.precio.antes}, ahora {t.precio.ahora}</span>
-							<del aria-hidden="true">{t.precio.antes}</del>
-							<ins aria-hidden="true">{t.precio.ahora}</ins>
-						</p>
-					)}
-					{t.fecha && <time datetime={t.fecha}>{fmt.format(new Date(`${t.fecha}T12:00:00`))}</time>}
-					<h3 class="card__title">{t.titulo}</h3>
-					{t.texto && <p class="card__text">{t.texto}</p>}
-					{t.etiqueta && <span class="card__tag">{t.etiqueta}</span>}
-					{t.enlace && (
-						<a
-							class="card__link"
-							href={`#${t.enlace.seccion}`}
-							data-filtro-marca={t.enlace.categoria ? slug(t.enlace.categoria) : undefined}
+				<Tag class:list={['card', { 'has-detail': t.detalle }]}>
+					{/* En móvil, la cabecera es una fila plegable; en escritorio sus hijos fluyen en la tarjeta */}
+					<div class="card__head" data-head>
+						{t.icono && (
+							<span class="card__icon">
+								<Icon name={t.icono} size={24} />
+							</span>
+						)}
+						{t.descuento && <p class="card__discount">{t.descuento}</p>}
+						{t.precio && (
+							<p class="card__price">
+								<span class="sr-only">Antes {t.precio.antes}, ahora {t.precio.ahora}</span>
+								<del aria-hidden="true">{t.precio.antes}</del>
+								<ins aria-hidden="true">{t.precio.ahora}</ins>
+							</p>
+						)}
+						<div class="card__heading">
+							{t.fecha && <time datetime={t.fecha}>{fmt.format(new Date(`${t.fecha}T12:00:00`))}</time>}
+							<h3 class="card__title">{t.titulo}</h3>
+						</div>
+						<button
+							type="button"
+							class="card__toggle"
+							aria-expanded="false"
+							aria-controls={`${uid}-${i}-body`}
+							aria-label={`Ver más: ${t.titulo}`}
+							data-toggle
 						>
-							{t.enlace.texto}
-							<Icon name="arrow-right" size={18} />
-						</a>
-					)}
-					{t.detalle && (
-						<>
-							<button
-								type="button"
-								class="btn btn--light btn--sm card__more"
-								aria-expanded="false"
-								aria-controls={`${uid}-${i}`}
-								data-more
+							<Icon name="caret-down" size={20} />
+						</button>
+					</div>
+					<div class="card__body" id={`${uid}-${i}-body`}>
+						{t.texto && <p class="card__text">{t.texto}</p>}
+						{t.etiqueta && <span class="card__tag">{t.etiqueta}</span>}
+						{t.enlace && (
+							<a
+								class="card__link"
+								href={`#${t.enlace.seccion}`}
+								data-filtro-marca={t.enlace.categoria ? slug(t.enlace.categoria) : undefined}
 							>
-								Más información
+								{t.enlace.texto}
 								<Icon name="arrow-right" size={18} />
-							</button>
-							<div class="card__detail" id={`${uid}-${i}`} data-detail>
-								<h4 class="card__detail-title" tabindex="-1">
-									{t.detalle.titulo}
-								</h4>
-								<p class="card__detail-text">{t.detalle.texto}</p>
-								<button type="button" class="btn btn--primary btn--sm card__back" data-back>
-									<Icon name="arrow-left" size={18} />
-									Volver a todos los servicios
+							</a>
+						)}
+						{t.detalle && (
+							<>
+								<button
+									type="button"
+									class="btn btn--light btn--sm card__more"
+									aria-expanded="false"
+									aria-controls={`${uid}-${i}`}
+									data-more
+								>
+									Más información
+									<Icon name="arrow-right" size={18} />
 								</button>
-							</div>
-						</>
-					)}
+								<div class="card__detail" id={`${uid}-${i}`} data-detail>
+									<h4 class="card__detail-title" tabindex="-1">
+										{t.detalle.titulo}
+									</h4>
+									<p class="card__detail-text">{t.detalle.texto}</p>
+									<button type="button" class="btn btn--primary btn--sm card__back" data-back>
+										<Icon name="arrow-left" size={18} />
+										Volver a todos los servicios
+									</button>
+								</div>
+							</>
+						)}
+					</div>
 				</Tag>
 			</li>
 		))
@@ -303,6 +320,166 @@ const slug = (s: string) =>
 		}
 	}
 
+	/* Escritorio: la cabecera y el cuerpo no crean cajas; el botón de plegar no existe */
+	.card__head,
+	.card__heading,
+	.card__body {
+		display: contents;
+	}
+
+	.card__toggle {
+		display: none;
+	}
+
+	/* ── Móvil: cada tarjeta es una fila (icono + título) que se despliega ── */
+	@media (max-width: 639px) {
+		.cards {
+			gap: var(--s-100);
+		}
+
+		.card {
+			gap: 0;
+			padding: var(--s-100) var(--s-100) var(--s-100) var(--s-200);
+			border-radius: 16px;
+			box-shadow: 0 8px 24px rgb(14 58 91 / 0.14);
+		}
+
+		.card:hover {
+			transform: none;
+		}
+
+		.card__head {
+			display: flex;
+			align-items: center;
+			gap: var(--s-100);
+			min-height: 44px;
+		}
+
+		.card__heading {
+			display: grid;
+			flex: 1;
+			min-width: 0;
+		}
+
+		.card__icon {
+			flex: none;
+			width: 40px;
+			height: 40px;
+			border-radius: 12px;
+		}
+
+		.card__title {
+			font-size: 1rem;
+			line-height: 1.5rem;
+		}
+
+		time {
+			font-size: 0.75rem;
+			line-height: 1rem;
+		}
+
+		.card__discount,
+		.card__price ins {
+			flex: none;
+			align-self: center;
+			padding: 2px var(--s-75);
+			border-radius: 8px;
+			font-size: 1rem;
+			line-height: 1.5rem;
+		}
+
+		.card__price {
+			flex: none;
+			align-self: center;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0;
+		}
+
+		.card__price del {
+			font-size: 0.75rem;
+			line-height: 1rem;
+		}
+
+		/* La fecha de fin ya aparece en la nota bajo las promociones */
+		.card__tag {
+			display: none;
+		}
+
+		.card__body {
+			display: grid;
+			gap: var(--s-100);
+			padding: var(--s-100) var(--s-100) var(--s-100) 0;
+		}
+
+		.card__link {
+			margin-top: 0;
+		}
+
+		/* Con JavaScript, el cuerpo se pliega y aparece el botón */
+		.is-collapsible .card__toggle {
+			display: grid;
+			place-items: center;
+			flex: none;
+			width: 44px;
+			height: 44px;
+			margin-left: auto;
+			padding: 0;
+			border: 0;
+			border-radius: 9999px;
+			background: rgb(14 58 91 / 0.06);
+			color: var(--ink);
+			cursor: pointer;
+			transition:
+				transform 0.5s var(--ease),
+				background-color 0.5s var(--ease);
+		}
+
+		.is-collapsible .card__toggle[aria-expanded='true'] {
+			transform: rotate(180deg);
+			background: rgb(31 143 141 / 0.14);
+		}
+
+		.is-collapsible .card__head {
+			cursor: pointer;
+		}
+
+		.is-collapsible > li:not(.is-expanded) .card__body {
+			display: none;
+		}
+
+		/* Servicio con detalle: al desplegar se ve el detalle en lugar del resumen */
+		.has-detail .card__text,
+		.card__more,
+		.card__back {
+			display: none;
+		}
+
+		.card__detail,
+		.card__detail[hidden] {
+			display: grid;
+			gap: var(--s-75);
+			margin: 0;
+			padding: 0;
+			border: 0;
+		}
+
+		.card__detail-title {
+			font-size: 1rem;
+			line-height: 1.5rem;
+		}
+
+		.card__detail-text {
+			font-size: 0.875rem;
+			line-height: 1.25rem;
+		}
+
+		.card__text {
+			font-size: 0.875rem;
+			line-height: 1.25rem;
+		}
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		.cards.is-focused > li.is-open {
 			animation: none;
@@ -311,6 +488,34 @@ const slug = (s: string) =>
 </style>
 
 <script>
+	// Móvil: cada tarjeta se despliega con su botón (o tocando la cabecera); solo una abierta a la vez.
+	// Sin JavaScript, todo se ve desplegado.
+	document.querySelectorAll<HTMLElement>('[data-cards]').forEach((list) => {
+		list.classList.add('is-collapsible');
+		const items = Array.from(list.querySelectorAll<HTMLElement>('[data-card]'));
+		const setOpen = (li: HTMLElement, open: boolean) => {
+			li.classList.toggle('is-expanded', open);
+			li.querySelector('[data-toggle]')?.setAttribute('aria-expanded', String(open));
+		};
+		items.forEach((li) => {
+			const toggle = li.querySelector<HTMLButtonElement>('[data-toggle]');
+			const head = li.querySelector<HTMLElement>('[data-head]');
+			if (!toggle || !head) return;
+			const flip = () => {
+				const open = !li.classList.contains('is-expanded');
+				items.forEach((other) => other !== li && setOpen(other, false));
+				setOpen(li, open);
+			};
+			toggle.addEventListener('click', (e) => {
+				e.stopPropagation();
+				flip();
+			});
+			head.addEventListener('click', () => {
+				if (getComputedStyle(toggle).display !== 'none') flip();
+			});
+		});
+	});
+
 	// Con JavaScript, el detalle empieza oculto; sin JavaScript se ve debajo de su tarjeta
 	document.querySelectorAll<HTMLElement>('[data-cards]').forEach((list) => {
 		const cards = Array.from(list.querySelectorAll<HTMLElement>('[data-card]'));

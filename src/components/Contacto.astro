@@ -88,8 +88,21 @@ const canales = [
 		}
 	}
 
+	@media (max-width: 639px) {
+		.contacto__inner {
+			gap: var(--s-200);
+		}
+		.contacto__head {
+			gap: var(--s-100);
+			padding: var(--s-200);
+			border-radius: 16px;
+		}
+	}
+
+	/* minmax(0, 1fr): el correo no puede ensanchar la columna más que la pantalla */
 	.canales {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: var(--s-200);
 		margin: 0;
 		padding: 0;
@@ -98,7 +111,7 @@ const canales = [
 
 	@media (min-width: 640px) {
 		.canales {
-			grid-template-columns: repeat(2, 1fr);
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 
@@ -153,7 +166,23 @@ const canales = [
 
 	.canal__value {
 		font-weight: 700;
-		overflow-wrap: break-word;
+		overflow-wrap: anywhere;
+	}
+
+	@media (max-width: 639px) {
+		.canales {
+			gap: var(--s-100);
+		}
+		.canal {
+			gap: var(--s-100);
+			padding: var(--s-100) var(--s-200);
+			border-radius: 16px;
+		}
+		.canal__icon {
+			width: 40px;
+			height: 40px;
+			border-radius: 12px;
+		}
 	}
 
 	.canal :global(.canal__arrow) {

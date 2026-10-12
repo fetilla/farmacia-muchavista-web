@@ -2,6 +2,8 @@
 /**
  * Marcas autogeneradas desde src/config/marcas.yaml.
  * Las fotos se buscan en src/assets/marcas/; si no hay foto, se muestran las iniciales.
+ * Carrusel deslizable (con el dedo, arrastrando con el ratón o con las flechas); al pulsar
+ * una marca se muestra su descripción debajo. Los filtros solo se ven en escritorio.
  */
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
@@ -9,8 +11,6 @@ import Icon from './Icon.astro';
 import { getMarcas } from '../lib/config';
 
 const { categorias: oficiales, marcas } = await getMarcas();
-/** Marcas visibles antes de pulsar "Ver todas las marcas" (en cualquier pantalla y filtro) */
-const VISIBLES = 8;
 // Logos y fotos: los de mapa de bits se optimizan con <Image>; los SVG se sirven tal cual
 const raster = import.meta.glob<{ default: ImageMetadata }>('../assets/marcas/*.{png,jpg,jpeg,webp,avif}', {
 	eager: true,
@@ -40,7 +40,7 @@ const slug = (s: string) =>
 		.replace(/[^a-z0-9]+/g, '-');
 ---
 
-<div class="marcas" data-marcas data-visibles={VISIBLES}>
+<div class="marcas reveal" data-marcas>
 	{
 		categorias.length > 1 && (
 			<div class="marcas__filters" role="group" aria-label="Filtrar marcas por categoría">
@@ -60,48 +60,57 @@ const slug = (s: string) =>
 		marcas.length === 0 ? (
 			<p class="marcas__empty">Pronto podrás ver aquí las marcas que tenemos en la farmacia.</p>
 		) : (
-			<ul class="marcas__grid" id="marcas-grid" role="list">
-				{marcas.map((m) => {
-					const foto = fotoDe(m.foto);
-					return (
-						<li class="marca reveal" data-categoria={slug(m.categoria)}>
-							<div class:list={['marca__media', { 'has-logo': foto }]}>
-								{foto?.kind === 'raster' ? (
-									<Image src={foto.src} alt={`Logotipo de ${m.nombre}`} width={480} class="marca__img" />
-								) : foto?.kind === 'svg' ? (
-									<img src={foto.src} alt={`Logotipo de ${m.nombre}`} class="marca__img" loading="lazy" decoding="async" />
-								) : (
-									<span class="marca__initials" aria-hidden="true">
-										{iniciales(m.nombre)}
-									</span>
-								)}
-							</div>
-							<div class="marca__body">
-								<p class="marca__cat">{m.categoria}</p>
-								<h3 class="marca__name">{m.nombre}</h3>
-								<p class="marca__desc">{m.descripcion}</p>
-							</div>
-						</li>
-					);
-				})}
-			</ul>
-		)
-	}
-	{
-		marcas.length > VISIBLES && (
-			<button
-				type="button"
-				class="marcas__divider"
-				data-more
-				aria-expanded="false"
-				aria-controls="marcas-grid"
-				hidden
-			>
-				<span class="marcas__divider-label">
-					<span data-more-label>Ver todas las marcas ({marcas.length})</span>
-					<Icon name="caret-down" size={18} class="marcas__divider-icon" />
-				</span>
-			</button>
+			<>
+				<div class="marcas__carousel">
+					<ul class="marcas__track" role="list" aria-label="Marcas" tabindex="0" data-track>
+						{marcas.map((m) => {
+							const foto = fotoDe(m.foto);
+							return (
+								<li class="marca" data-categoria={slug(m.categoria)}>
+									<button
+										type="button"
+										class="marca__btn"
+										aria-expanded="false"
+										aria-controls="marcas-panel"
+										data-marca
+										data-nombre={m.nombre}
+										data-cat={m.categoria}
+									>
+										<span class:list={['marca__media', { 'has-logo': foto }]}>
+											{foto?.kind === 'raster' ? (
+												<Image src={foto.src} alt="" width={320} class="marca__img" draggable="false" />
+											) : foto?.kind === 'svg' ? (
+												<img src={foto.src} alt="" class="marca__img" loading="lazy" decoding="async" draggable="false" />
+											) : (
+												<span class="marca__initials" aria-hidden="true">
+													{iniciales(m.nombre)}
+												</span>
+											)}
+										</span>
+										<span class="marca__name">{m.nombre}</span>
+									</button>
+									{/* Sin JavaScript la descripción se ve en la ficha; con JavaScript, en el panel */}
+									<p class="marca__desc">{m.descripcion}</p>
+								</li>
+							);
+						})}
+					</ul>
+					<button type="button" class="marcas__arrow marcas__arrow--prev" aria-label="Marcas anteriores" data-prev hidden>
+						<Icon name="caret-left" size={22} />
+					</button>
+					<button type="button" class="marcas__arrow marcas__arrow--next" aria-label="Más marcas" data-next hidden>
+						<Icon name="caret-right" size={22} />
+					</button>
+				</div>
+				<div class="marcas__panel" id="marcas-panel" aria-live="polite" data-panel hidden>
+					<p class="marcas__panel-cat" data-panel-cat />
+					<p class="marcas__panel-name" data-panel-name />
+					<p class="marcas__panel-desc" data-panel-desc />
+					<button type="button" class="marcas__panel-close" aria-label="Cerrar descripción" data-panel-close>
+						<Icon name="x" size={18} />
+					</button>
+				</div>
+			</>
 		)
 	}
 </div>
@@ -110,13 +119,21 @@ const slug = (s: string) =>
 	.marcas {
 		position: relative;
 		display: grid;
-		gap: var(--s-300);
+		gap: var(--s-200);
+		min-width: 0;
 	}
 
+	/* Filtros: solo en escritorio y tableta */
 	.marcas__filters {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--s-75);
+		display: none;
+	}
+
+	@media (min-width: 640px) {
+		.marcas__filters {
+			display: flex;
+			flex-wrap: wrap;
+			gap: var(--s-75);
+		}
 	}
 
 	.chip {
@@ -153,112 +170,97 @@ const slug = (s: string) =>
 		color: var(--foam);
 	}
 
-	.marcas__grid {
-		display: grid;
-		gap: var(--s-200);
+	/* ── Carrusel ── */
+	.marcas__carousel {
+		position: relative;
+		min-width: 0;
+	}
+
+	.marcas__track {
+		--visibles: 2.3;
+		display: flex;
+		gap: var(--s-100);
 		margin: 0;
-		padding: 0;
+		padding: var(--s-75) 0 var(--s-200);
 		list-style: none;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.marcas__track::-webkit-scrollbar {
+		display: none;
 	}
 
 	@media (min-width: 640px) {
-		.marcas__grid {
-			grid-template-columns: repeat(2, 1fr);
+		.marcas__track {
+			--visibles: 3.4;
+			gap: var(--s-200);
 		}
 	}
 
 	@media (min-width: 1024px) {
-		.marcas__grid {
-			grid-template-columns: repeat(4, 1fr);
+		.marcas__track {
+			--visibles: 5;
+		}
+	}
+
+	/* Arrastrando con el ratón */
+	.marcas__track.is-dragging {
+		scroll-snap-type: none;
+		cursor: grabbing;
+		user-select: none;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.marcas__track {
+			cursor: grab;
 		}
 	}
 
 	.marca {
+		flex: 0 0 calc((100% - (var(--visibles) - 1) * var(--s-200)) / var(--visibles));
 		display: flex;
 		flex-direction: column;
-		overflow: hidden;
-		border-radius: 24px;
-		background: var(--card);
-		backdrop-filter: blur(16px);
-		-webkit-backdrop-filter: blur(16px);
-		box-shadow: 0 16px 48px rgb(14 58 91 / 0.16);
+		scroll-snap-align: start;
 	}
 
 	.marca[hidden] {
 		display: none;
 	}
 
-	/* Marcas que exceden el máximo visible hasta pulsar "Ver todas las marcas" */
-	.marca.is-collapsed {
-		display: none;
-	}
-
-	/* Separador horizontal pulsable: línea a todo el ancho con la etiqueta centrada */
-	.marcas__divider {
+	.marca__btn {
 		display: flex;
-		align-items: center;
-		gap: var(--s-200);
+		flex-direction: column;
 		width: 100%;
-		min-height: 48px;
+		height: 100%;
 		padding: 0;
+		overflow: hidden;
 		border: 0;
-		background: none;
-		font: inherit;
-		cursor: pointer;
-	}
-
-	.marcas__divider[hidden] {
-		display: none;
-	}
-
-	.marcas__divider::before,
-	.marcas__divider::after {
-		content: '';
-		flex: 1;
-		height: 2px;
-		border-radius: 2px;
-		background: rgb(251 253 255 / 0.75);
-		transition: background-color 0.7s var(--ease);
-	}
-
-	.marcas__divider-label {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--s-75);
-		min-height: 44px;
-		padding: var(--s-75) var(--s-200);
-		border-radius: 9999px;
+		border-radius: 16px;
 		background: var(--card);
 		color: var(--ink);
-		font-size: 0.875rem;
-		line-height: 1.25rem;
-		font-weight: 700;
-		box-shadow: 0 8px 24px rgb(14 58 91 / 0.18);
+		font: inherit;
+		text-align: left;
+		cursor: inherit;
+		box-shadow: 0 8px 24px rgb(14 58 91 / 0.14);
 		transition:
 			transform 0.7s var(--ease),
-			background-color 0.7s var(--ease);
+			box-shadow 0.5s var(--ease);
 	}
 
-	.marcas__divider:hover .marcas__divider-label {
-		transform: translateY(-2px);
-		background: #fff;
+	@media (hover: hover) {
+		.marca__btn:hover {
+			transform: translateY(-2px);
+		}
 	}
 
-	.marcas__divider:hover::before,
-	.marcas__divider:hover::after {
-		background: #fff;
-	}
-
-	.marcas__divider:active .marcas__divider-label {
-		transform: scale(0.98);
-	}
-
-	.marcas__divider :global(.marcas__divider-icon) {
-		transition: transform 0.7s var(--ease);
-	}
-
-	.marcas__divider[aria-expanded='true'] :global(.marcas__divider-icon) {
-		transform: rotate(180deg);
+	.marca__btn[aria-expanded='true'] {
+		box-shadow:
+			inset 0 0 0 3px var(--sea),
+			0 8px 24px rgb(14 58 91 / 0.14);
 	}
 
 	.marca__media {
@@ -270,38 +272,118 @@ const slug = (s: string) =>
 
 	/* Logos: enteros y centrados sobre fondo blanco */
 	.marca__media.has-logo {
-		background: #fff;
-		padding: var(--s-400) var(--s-500);
+		padding: var(--s-200);
 	}
 
 	.marca__img {
 		width: 100%;
 		height: 100%;
-		max-height: 96px;
+		max-height: 64px;
 		object-fit: contain;
+		pointer-events: none;
+		-webkit-user-drag: none;
 	}
 
 	.marca__initials {
 		display: grid;
 		place-items: center;
-		width: 80px;
-		height: 80px;
+		width: 56px;
+		height: 56px;
 		border-radius: 9999px;
 		background: var(--foam);
 		color: var(--brand);
-		font-size: 1.875rem;
-		line-height: 2.25rem;
+		font-size: 1.25rem;
+		line-height: 1.75rem;
 		font-weight: 700;
 		box-shadow: inset 0 0 0 2px var(--brand-soft);
 	}
 
-	.marca__body {
-		display: grid;
-		gap: var(--s-75);
-		padding: var(--s-300);
+	/* El nombre ocupa el resto de la ficha: si otra marca necesita dos líneas, queda centrado */
+	.marca__name {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		padding: var(--s-75) var(--s-100);
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		font-weight: 700;
+		border-top: 1px solid var(--line);
 	}
 
-	.marca__cat {
+	.marca__desc {
+		padding: var(--s-75) var(--s-100) 0;
+		font-size: 0.75rem;
+		line-height: 1rem;
+		color: var(--ink);
+	}
+
+	.is-enhanced .marca__desc {
+		display: none;
+	}
+
+	/* Flechas: solo en pantallas con ratón o anchas */
+	.marcas__arrow {
+		position: absolute;
+		top: calc(50% - var(--s-100));
+		z-index: 1;
+		display: none;
+		place-items: center;
+		width: 44px;
+		height: 44px;
+		padding: 0;
+		border: 0;
+		border-radius: 9999px;
+		background: var(--foam);
+		color: var(--ink);
+		cursor: pointer;
+		box-shadow: 0 8px 24px rgb(14 58 91 / 0.24);
+		transform: translateY(-50%);
+		transition:
+			opacity 0.5s var(--ease),
+			background-color 0.5s var(--ease);
+	}
+
+	.marcas__arrow--prev {
+		left: calc(-1 * var(--s-200));
+	}
+
+	.marcas__arrow--next {
+		right: calc(-1 * var(--s-200));
+	}
+
+	@media (min-width: 640px) {
+		.marcas__arrow:not([hidden]) {
+			display: grid;
+		}
+	}
+
+	.marcas__arrow:hover {
+		background: #fff;
+	}
+
+	.marcas__arrow:disabled {
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	/* ── Descripción de la marca pulsada ── */
+	.marcas__panel {
+		position: relative;
+		display: grid;
+		gap: var(--s-50);
+		max-width: 640px;
+		padding: var(--s-200) var(--s-600) var(--s-200) var(--s-200);
+		border-radius: 16px;
+		background: var(--card);
+		box-shadow: 0 8px 24px rgb(14 58 91 / 0.14);
+		animation: panel-in 0.5s var(--ease);
+	}
+
+	.marcas__panel[hidden] {
+		display: none;
+	}
+
+	.marcas__panel-cat {
 		font-size: 0.75rem;
 		line-height: 1rem;
 		font-weight: 700;
@@ -310,15 +392,49 @@ const slug = (s: string) =>
 		color: var(--sea);
 	}
 
-	.marca__name {
-		font-size: 1.25rem;
+	.marcas__panel-name {
+		font-size: 1.125rem;
 		line-height: 1.75rem;
+		font-weight: 700;
 	}
 
-	.marca__desc {
+	.marcas__panel-desc {
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 		color: var(--ink-soft);
+	}
+
+	.marcas__panel-close {
+		position: absolute;
+		top: var(--s-50);
+		right: var(--s-50);
+		display: grid;
+		place-items: center;
+		width: 44px;
+		height: 44px;
+		padding: 0;
+		border: 0;
+		border-radius: 9999px;
+		background: none;
+		color: var(--ink-soft);
+		cursor: pointer;
+	}
+
+	.marcas__panel-close:hover {
+		background: rgb(14 58 91 / 0.06);
+	}
+
+	@keyframes panel-in {
+		from {
+			opacity: 0;
+			transform: translateY(8px);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.marcas__panel {
+			animation: none;
+		}
 	}
 
 	.marcas__empty {
@@ -337,62 +453,124 @@ const slug = (s: string) =>
 			.replace(/[^a-z0-9]+/g, '-');
 
 	document.querySelectorAll<HTMLElement>('[data-marcas]').forEach((root) => {
-		const max = Number(root.dataset.visibles) || 8;
+		const track = root.querySelector<HTMLElement>('[data-track]');
+		if (!track) return;
+		root.classList.add('is-enhanced');
 		const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-filter]'));
-		const items = Array.from(root.querySelectorAll<HTMLElement>('[data-categoria]'));
-		const more = root.querySelector<HTMLButtonElement>('[data-more]');
-		const label = root.querySelector<HTMLElement>('[data-more-label]');
-		let filter = 'todas';
-		let expanded = false;
+		const items = Array.from(track.querySelectorAll<HTMLElement>('[data-categoria]'));
+		const prev = root.querySelector<HTMLButtonElement>('[data-prev]')!;
+		const next = root.querySelector<HTMLButtonElement>('[data-next]')!;
+		const panel = root.querySelector<HTMLElement>('[data-panel]')!;
+		const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+		let selected: HTMLButtonElement | null = null;
 
-		function apply() {
-			const matching = items.filter((it) => filter === 'todas' || it.dataset.categoria === filter);
-			items.forEach((it) => {
-				it.hidden = !matching.includes(it);
-				it.classList.remove('is-collapsed');
-			});
-			if (!expanded) matching.slice(max).forEach((it) => it.classList.add('is-collapsed'));
-			if (more && label) {
-				more.hidden = matching.length <= max;
-				more.setAttribute('aria-expanded', String(expanded));
-				label.textContent = expanded ? 'Ver menos' : `Ver todas las marcas (${matching.length})`;
-			}
+		// ── Descripción de la marca pulsada ──
+		function select(btn: HTMLButtonElement | null) {
+			selected?.setAttribute('aria-expanded', 'false');
+			selected = btn;
+			panel.hidden = !btn;
+			if (!btn) return;
+			btn.setAttribute('aria-expanded', 'true');
+			panel.querySelector('[data-panel-cat]')!.textContent = btn.dataset.cat || '';
+			panel.querySelector('[data-panel-name]')!.textContent = btn.dataset.nombre || '';
+			panel.querySelector('[data-panel-desc]')!.textContent =
+				btn.closest('li')?.querySelector('.marca__desc')?.textContent || '';
 		}
 
-		function setFilter(value: string) {
-			filter = value;
-			expanded = false;
-			buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === value)));
-			apply();
-		}
-
-		buttons.forEach((btn) => btn.addEventListener('click', () => setFilter(btn.dataset.filter || 'todas')));
-
-		more?.addEventListener('click', () => {
-			expanded = !expanded;
-			apply();
-			const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-			if (expanded) {
-				// El foco pasa a la primera marca que estaba oculta
-				const first = items.filter((it) => !it.hidden)[max];
-				if (first) {
-					first.classList.add('is-visible');
-					first.setAttribute('tabindex', '-1');
-					first.focus({ preventScroll: true });
-				}
-			} else {
-				root.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
-			}
+		track.querySelectorAll<HTMLButtonElement>('[data-marca]').forEach((btn) =>
+			btn.addEventListener('click', () => select(selected === btn ? null : btn)),
+		);
+		panel.querySelector('[data-panel-close]')?.addEventListener('click', () => {
+			const btn = selected;
+			select(null);
+			btn?.focus();
 		});
 
-		// Enlaces desde otras secciones con una categoría (p. ej. la noticia de Kiokids)
+		// ── Flechas ──
+		function updateArrows() {
+			const max = track!.scrollWidth - track!.clientWidth;
+			prev.hidden = next.hidden = max <= 1;
+			prev.disabled = track!.scrollLeft <= 1;
+			next.disabled = track!.scrollLeft >= max - 1;
+		}
+		const page = (dir: number) =>
+			track.scrollBy({ left: dir * track.clientWidth * 0.8, behavior: reduce() ? 'auto' : 'smooth' });
+		prev.addEventListener('click', () => page(-1));
+		next.addEventListener('click', () => page(1));
+		track.addEventListener('scroll', updateArrows, { passive: true });
+		new ResizeObserver(updateArrows).observe(track);
+
+		// ── Arrastrar con el ratón (en táctil el deslizamiento es nativo) ──
+		let startX = 0;
+		let startLeft = 0;
+		let dragging = false;
+		let moved = false;
+		track.addEventListener('pointerdown', (e) => {
+			if (e.pointerType !== 'mouse' || e.button !== 0) return;
+			dragging = true;
+			moved = false;
+			startX = e.clientX;
+			startLeft = track.scrollLeft;
+		});
+		track.addEventListener('pointermove', (e) => {
+			if (!dragging) return;
+			const dx = e.clientX - startX;
+			if (!moved && Math.abs(dx) > 5) {
+				moved = true;
+				track.classList.add('is-dragging');
+				track.setPointerCapture(e.pointerId);
+			}
+			if (moved) track.scrollLeft = startLeft - dx;
+		});
+		const endDrag = () => {
+			if (!dragging) return;
+			dragging = false;
+			// Al quitar is-dragging vuelve el scroll-snap y el carrusel se ajusta a la ficha más cercana
+			track.classList.remove('is-dragging');
+		};
+		track.addEventListener('pointerup', endDrag);
+		track.addEventListener('pointercancel', endDrag);
+		// Un arrastre no debe contar como clic en la marca
+		track.addEventListener(
+			'click',
+			(e) => {
+				if (moved) {
+					e.preventDefault();
+					e.stopPropagation();
+					moved = false;
+				}
+			},
+			true,
+		);
+
+		// ── Filtros (solo visibles en escritorio) ──
+		function setFilter(value: string) {
+			buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === value)));
+			items.forEach((it) => (it.hidden = value !== 'todas' && it.dataset.categoria !== value));
+			if (selected?.closest('li')?.hidden) select(null);
+			track!.scrollTo({ left: 0 });
+			updateArrows();
+		}
+		buttons.forEach((btn) => btn.addEventListener('click', () => setFilter(btn.dataset.filter || 'todas')));
+
+		// Enlaces desde otras secciones con una categoría (p. ej. la noticia de Kiokids):
+		// en escritorio aplican el filtro; en móvil, sin filtros, llevan a la primera marca de esa categoría
 		document.querySelectorAll<HTMLAnchorElement>('[data-filtro-marca]').forEach((a) =>
 			a.addEventListener('click', () => {
 				const value = slugify(a.dataset.filtroMarca || '');
-				if (buttons.some((b) => b.dataset.filter === value)) setFilter(value);
+				const filtersVisible = buttons[0] && getComputedStyle(buttons[0].parentElement!).display !== 'none';
+				if (filtersVisible && buttons.some((b) => b.dataset.filter === value)) {
+					setFilter(value);
+					return;
+				}
+				setFilter('todas');
+				const first = items.find((it) => it.dataset.categoria === value);
+				if (!first) return;
+				track!.scrollTo({ left: first.offsetLeft - track!.offsetLeft, behavior: reduce() ? 'auto' : 'smooth' });
+				select(first.querySelector<HTMLButtonElement>('[data-marca]'));
 			}),
 		);
 
-		apply();
+		updateArrows();
 	});
 </script>
