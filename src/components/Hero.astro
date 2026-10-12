@@ -154,4 +154,15 @@ const { inicio } = await getSecciones();
 		margin-top: 40vh;
 	}
 
+	/* Móvil: menos recorrido entre secciones (el vídeo avanza más deprisa por cada scroll) */
+	@media (max-width: 639px) {
+		.hero {
+			min-height: 0;
+			padding-bottom: var(--s-600);
+		}
+		.hero__info {
+			margin-top: 15vh;
+		}
+	}
+
 </style>

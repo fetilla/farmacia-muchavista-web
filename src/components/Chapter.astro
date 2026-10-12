@@ -73,7 +73,12 @@ const Heading = headingLevel;
 		}
 	}
 
+	/* Móvil: menos recorrido entre secciones (el vídeo avanza más deprisa por cada scroll) */
 	@media (max-width: 639px) {
+		.chapter {
+			min-height: 110vh;
+			padding: 20vh 0 var(--s-600);
+		}
 		.chapter__inner {
 			gap: var(--s-300);
 		}
@@ -82,6 +87,11 @@ const Heading = headingLevel;
 			padding: var(--s-200);
 			border-radius: 16px;
 		}
+	}
+
+	/* Secciones con poco contenido (Marcas, un carrusel): sin alto mínimo, solo lo que ocupan */
+	.chapter.chapter--fit {
+		min-height: 0;
 	}
 
 	.chapter--right .chapter__card {

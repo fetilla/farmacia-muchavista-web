@@ -102,10 +102,22 @@ Fichero: `src/components/Marcas.astro`
 - [x] **4.6 Enlace de Kiokids:** en escritorio aplica el filtro; en móvil mueve el carrusel hasta la primera marca de la categoría y la selecciona.
 - [x] **4.7 Animación de aparición:** el efecto `.reveal` pasa de cada ficha al bloque entero. Dentro de un carrusel horizontal, cada ficha se animaría al entrar por el lateral.
 
-## 5. Comprobación
+## 5. Menos scroll entre secciones en móvil
 
-- [x] **5.1** A 320, 360, 375, 390, 768 y 1280px, ningún elemento sobresale por la derecha.
-- [x] **5.2** Nuevos altos en móvil, a 375px:
+Aunque las tarjetas ya ocupaban mucho menos, cada sección seguía midiendo **1,8 pantallas** en móvil. El motivo era la altura mínima de 180vh y los 40vh de relleno superior. La página entera ocupaba **14,8 pantallas** de scroll.
+
+El vídeo avanza en proporción a la altura de cada sección (`scroll-world.ts`). Por eso, al acortarlas, el vídeo va más deprisa por cada gesto de scroll sin tocar el motor. Se aceptó a propósito que el vídeo vaya más rápido. Solo afecta a móvil (<640px); en escritorio no cambia nada.
+
+- [x] **5.1** `.chapter`: `min-height` pasa de 180vh a 110vh, y el relleno de `40vh … 96px` a `20vh … 48px` (`Chapter.astro`).
+- [x] **5.2** `.contacto`: `min-height` pasa de 220vh a 130vh, y el relleno de `40vh … 90vh` a `20vh … 45vh`. Se mantiene un margen final para ver el último tramo del vídeo (`Contacto.astro`).
+- [x] **5.3** `.hero`: sin altura mínima (manda el contenido), y el recuadro de horario pasa de 40vh a 15vh bajo la portada (`Hero.astro`).
+- [x] **5.4** Resultado a 375×800: de **14,8 a 10,6 pantallas** de scroll. Ahora cada sección ocupa entre 1,1 y 1,25 pantallas; la portada ocupa 1,9 y Contáctanos 2,0. En escritorio sigue igual: 13,9 pantallas y 180vh por sección.
+- [x] **5.5 Marcas sin alto mínimo**, en móvil y en escritorio: `class="chapter--fit"` en `index.astro`. Con el carrusel, la sección quedaba medio vacía porque conservaba la altura pensada para la antigua rejilla. Ahora mide lo que ocupa su contenido. El hueco hasta Promociones baja de 467 a 208px en móvil y de 883 a 416px en escritorio. Total de scroll: 10,2 pantallas en móvil y 13,4 en escritorio. En ese tramo el vídeo avanza más deprisa.
+
+## 6. Comprobación
+
+- [x] **6.1** A 320, 360, 375, 390, 768 y 1280px, ningún elemento sobresale por la derecha.
+- [x] **6.2** Nuevos altos en móvil, a 375px:
 
   | Bloque | Antes | Después |
   |---|---|---|
@@ -115,10 +127,10 @@ Fichero: `src/components/Marcas.astro`
   | Marcas, con filtros | 3171px + 200px | 177px |
   | Horario y localización | 717px | 561px |
 
-- [x] **5.3** Capturas en móvil de Servicios (con Control de tensión desplegado), Promociones, Marcas (con el panel de La Roche-Posay) y Contáctanos, donde el correo ya cabe entero.
+- [x] **6.3** Capturas en móvil de Servicios (con Control de tensión desplegado), Promociones, Marcas (con el panel de La Roche-Posay) y Contáctanos, donde el correo ya cabe entero.
   - Ajuste tras revisarlas: el descuento de las promociones se centra en vertical en la fila.
   - Ajuste tras revisarlas: el nombre de la marca se centra en su zona, porque "Sweet by Asun Arias" ocupa dos líneas.
-- [x] **5.4 Escritorio (1280px), sin cambios respecto a antes:**
+- [x] **6.4 Escritorio (1280px), sin cambios respecto a antes:**
   - Rejilla de tarjetas sin botón de plegar.
   - "Más información" y "Volver a todos los servicios" funcionan.
   - Promociones con su etiqueta de fecha.
@@ -128,7 +140,7 @@ Fichero: `src/components/Marcas.astro`
   - Arrastrar con el ratón mueve el carrusel sin abrir la descripción.
   - Un clic en una marca abre su descripción y un segundo clic la cierra.
   - El enlace de Kiokids aplica el filtro "Bebé y maternidad".
-- [x] **5.5** `astro check` sin errores y `astro build` correcto.
+- [x] **6.5** `astro check` sin errores y `astro build` correcto.
 
 ### Pendiente o mejorable
 
