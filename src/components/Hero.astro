@@ -40,23 +40,25 @@ const showBadge = import.meta.env.DEV && inicio.provisional;
 
 	<div class="container hero__info">
 		<div class="info-card reveal">
-			<h2 class="info-card__title">Horario</h2>
-			<Horario />
-		</div>
-		<div class="info-card reveal">
-			<h2 class="info-card__title">Localización</h2>
-			<address class="hero__address">
-				<Icon name="map-pin" size={24} />
-				<span>
-					{contacto.direccion.calle}<br />
-					{contacto.direccion.zona}<br />
-					{contacto.direccion.cp}, {contacto.direccion.provincia}
-				</span>
-			</address>
-			<a class="btn btn--light" href={contacto.maps_url} target="_blank" rel="noopener">
-				<Icon name="navigation-arrow" size={20} />
-				Cómo llegar
-			</a>
+			<div class="info-card__part">
+				<h2 class="info-card__title">Horario</h2>
+				<Horario />
+			</div>
+			<div class="info-card__part info-card__part--location">
+				<h2 class="info-card__title">Localización</h2>
+				<address class="hero__address">
+					<Icon name="map-pin" size={24} />
+					<span>
+						{contacto.direccion.calle}<br />
+						{contacto.direccion.zona}<br />
+						{contacto.direccion.cp}, {contacto.direccion.provincia}
+					</span>
+				</address>
+				<a class="btn btn--light" href={contacto.maps_url} target="_blank" rel="noopener">
+					<Icon name="navigation-arrow" size={20} />
+					Cómo llegar
+				</a>
+			</div>
 		</div>
 	</div>
 </section>
@@ -171,21 +173,12 @@ const showBadge = import.meta.env.DEV && inicio.provisional;
 	}
 
 	.hero__info {
-		display: grid;
-		gap: var(--s-300);
 		margin-top: 40vh;
-	}
-
-	@media (min-width: 960px) {
-		.hero__info {
-			grid-template-columns: 1.6fr 1fr;
-			align-items: start;
-		}
 	}
 
 	.info-card {
 		display: grid;
-		gap: var(--s-200);
+		gap: var(--s-400);
 		padding: var(--s-400);
 		border-radius: 24px;
 		background: var(--card);
@@ -194,9 +187,37 @@ const showBadge = import.meta.env.DEV && inicio.provisional;
 		box-shadow: 0 24px 64px rgb(14 58 91 / 0.2);
 	}
 
+	@media (min-width: 960px) {
+		.info-card {
+			grid-template-columns: 1.7fr 1fr;
+			gap: var(--s-500);
+		}
+	}
+
 	@media (max-width: 767px) {
 		.info-card {
 			padding: var(--s-300);
+		}
+	}
+
+	.info-card__part {
+		display: grid;
+		align-content: start;
+		gap: var(--s-200);
+	}
+
+	/* Separador entre horario y localización: debajo en móvil, a la izquierda en escritorio */
+	.info-card__part--location {
+		padding-top: var(--s-400);
+		border-top: 1px solid var(--line);
+	}
+
+	@media (min-width: 960px) {
+		.info-card__part--location {
+			padding-top: 0;
+			padding-left: var(--s-500);
+			border-top: 0;
+			border-left: 1px solid var(--line);
 		}
 	}
 
@@ -219,7 +240,7 @@ const showBadge = import.meta.env.DEV && inicio.provisional;
 		margin-top: 2px;
 	}
 
-	.hero .info-card .btn {
+	.info-card .btn {
 		justify-self: start;
 	}
 </style>

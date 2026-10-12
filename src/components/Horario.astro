@@ -33,9 +33,11 @@ const horario = await getHorario();
 				>
 					<h3 class="horario__name">
 						<Icon name="clock" size={20} />
-						<span>{t.nombre}</span>
-						<span class="horario__now" data-season-badge hidden>
-							Vigente
+						<span class="horario__label">
+							{t.nombre}
+							<span class="horario__now" data-season-badge hidden>
+								Vigente
+							</span>
 						</span>
 					</h3>
 					<dl>
@@ -90,8 +92,7 @@ const horario = await getHorario();
 
 	.horario__name {
 		display: flex;
-		align-items: center;
-		flex-wrap: wrap;
+		align-items: flex-start;
 		gap: var(--s-75);
 		margin-bottom: var(--s-100);
 		font-size: 1rem;
@@ -100,10 +101,19 @@ const horario = await getHorario();
 	}
 
 	.horario__name :global(.icon) {
+		flex: none;
+		margin-top: 2px;
 		color: var(--sea);
 	}
 
+	.horario__label {
+		min-width: 0;
+	}
+
 	.horario__now {
+		display: inline-block;
+		margin-left: var(--s-75);
+		vertical-align: 1px;
 		padding: 2px var(--s-75);
 		border-radius: 9999px;
 		background: var(--sea);
@@ -173,6 +183,7 @@ const horario = await getHorario();
 		background: rgb(242 131 107 / 0.16);
 	}
 
+	.horario__now[hidden],
 	.horario__status[hidden] {
 		display: none;
 	}
