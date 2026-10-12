@@ -1,0 +1,11 @@
+// Despliegue en Cloudflare Workers como web estática (sin servidor).
+// Build: `pnpm build` genera dist/; deploy: `npx wrangler deploy`.
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "farmacia-muchavista-web",
+	"compatibility_date": "2026-10-12",
+	"assets": {
+		"directory": "./dist",
+		"not_found_handling": "404-page"
+	}
+}
