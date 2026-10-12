@@ -8,6 +8,10 @@ interface Tarjeta {
 	icono?: string;
 	etiqueta?: string;
 	fecha?: string;
+	detalle?: { titulo: string; texto: string };
+	descuento?: string;
+	precio?: { antes: string; ahora: string };
+	enlace?: { texto: string; seccion: string; categoria?: string };
 }
 
 interface Props {
@@ -16,24 +20,73 @@ interface Props {
 }
 
 const { tarjetas, variant = 'service' } = Astro.props;
+const uid = `${variant}-${Math.random().toString(36).slice(2, 7)}`;
 const fmt = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 const Tag = variant === 'news' ? 'article' : 'div';
+const slug = (s: string) =>
+	s
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, '-');
 ---
 
-<ul class:list={['cards', `cards--${variant}`]} role="list">
+<ul class:list={['cards', `cards--${variant}`, { 'cards--two': tarjetas.length === 2 }]} role="list" data-cards>
 	{
 		tarjetas.map((t, i) => (
-			<li class="reveal" style={`transition-delay:${(i % 3) * 100}ms`}>
+			<li class="reveal" style={`transition-delay:${(i % 3) * 100}ms`} data-card>
 				<Tag class="card">
 					{t.icono && (
 						<span class="card__icon">
 							<Icon name={t.icono} size={24} />
 						</span>
 					)}
-					{t.etiqueta && <span class="card__tag">{t.etiqueta}</span>}
+					{t.descuento && <p class="card__discount">{t.descuento}</p>}
+					{t.precio && (
+						<p class="card__price">
+							<span class="sr-only">Antes {t.precio.antes}, ahora {t.precio.ahora}</span>
+							<del aria-hidden="true">{t.precio.antes}</del>
+							<ins aria-hidden="true">{t.precio.ahora}</ins>
+						</p>
+					)}
 					{t.fecha && <time datetime={t.fecha}>{fmt.format(new Date(`${t.fecha}T12:00:00`))}</time>}
 					<h3 class="card__title">{t.titulo}</h3>
 					{t.texto && <p class="card__text">{t.texto}</p>}
+					{t.etiqueta && <span class="card__tag">{t.etiqueta}</span>}
+					{t.enlace && (
+						<a
+							class="card__link"
+							href={`#${t.enlace.seccion}`}
+							data-filtro-marca={t.enlace.categoria ? slug(t.enlace.categoria) : undefined}
+						>
+							{t.enlace.texto}
+							<Icon name="arrow-right" size={18} />
+						</a>
+					)}
+					{t.detalle && (
+						<>
+							<button
+								type="button"
+								class="btn btn--light btn--sm card__more"
+								aria-expanded="false"
+								aria-controls={`${uid}-${i}`}
+								data-more
+							>
+								Más información
+								<Icon name="arrow-right" size={18} />
+							</button>
+							<div class="card__detail" id={`${uid}-${i}`} data-detail>
+								<h4 class="card__detail-title" tabindex="-1">
+									{t.detalle.titulo}
+								</h4>
+								<p class="card__detail-text">{t.detalle.texto}</p>
+								<button type="button" class="btn btn--primary btn--sm card__back" data-back>
+									<Icon name="arrow-left" size={18} />
+									Volver a todos los servicios
+								</button>
+							</div>
+						</>
+					)}
 				</Tag>
 			</li>
 		))
@@ -58,6 +111,9 @@ const Tag = variant === 'news' ? 'article' : 'div';
 	@media (min-width: 1024px) {
 		.cards {
 			grid-template-columns: repeat(3, 1fr);
+		}
+		.cards--two {
+			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
@@ -101,11 +157,67 @@ const Tag = variant === 'news' ? 'article' : 'div';
 		color: #b04a33;
 	}
 
+	/* Promociones: el descuento o el precio es lo más visible de la tarjeta */
+	.card__discount {
+		align-self: flex-start;
+		padding: var(--s-50) var(--s-100);
+		border-radius: 12px;
+		background: var(--coral);
+		color: var(--ink);
+		font-size: 1.5rem;
+		line-height: 2rem;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+	}
+
+	.card__price {
+		display: flex;
+		align-items: baseline;
+		flex-wrap: wrap;
+		gap: var(--s-100);
+	}
+
+	.card__price del {
+		color: var(--ink-soft);
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+		font-weight: 600;
+	}
+
+	.card__price ins {
+		padding: var(--s-50) var(--s-100);
+		border-radius: 12px;
+		background: var(--coral);
+		color: var(--ink);
+		font-size: 1.5rem;
+		line-height: 2rem;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.card__link {
+		align-self: flex-start;
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-75);
+		min-height: 44px;
+		margin-top: auto;
+		color: var(--brand);
+		font-weight: 700;
+		text-decoration: none;
+		transition: gap 0.7s var(--ease);
+	}
+
+	.card__link:hover {
+		gap: var(--s-100);
+		text-decoration: underline;
+	}
+
 	.card__tag {
 		align-self: flex-start;
 		padding: 2px var(--s-75);
 		border-radius: 9999px;
-		background: var(--coral);
+		background: rgb(14 58 91 / 0.07);
 		color: var(--ink);
 		font-size: 0.75rem;
 		line-height: 1rem;
@@ -127,4 +239,110 @@ const Tag = variant === 'news' ? 'article' : 'div';
 	.card__text {
 		color: var(--ink-soft);
 	}
+
+	/* "Más información": la tarjeta elegida ocupa toda la rejilla y las demás se ocultan */
+	.card__more {
+		align-self: flex-start;
+		margin-top: auto;
+	}
+
+	.card__detail {
+		display: grid;
+		gap: var(--s-200);
+		margin-top: var(--s-100);
+		padding-top: var(--s-300);
+		border-top: 1px solid var(--line);
+	}
+
+	.card__detail[hidden] {
+		display: none;
+	}
+
+	.card__detail-title {
+		margin: 0;
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+		font-weight: 700;
+		text-wrap: balance;
+	}
+
+	.card__detail-title:focus {
+		outline: none;
+	}
+
+	.card__detail-text {
+		max-width: 72ch;
+		color: var(--ink-soft);
+	}
+
+	.card__back {
+		justify-self: start;
+	}
+
+	.cards.is-focused > li:not(.is-open) {
+		display: none;
+	}
+
+	.cards.is-focused > li.is-open {
+		grid-column: 1 / -1;
+		animation: card-open 0.7s var(--ease);
+	}
+
+	.cards > li.is-open .card:hover {
+		transform: none;
+	}
+
+	.cards > li.is-open .card__more {
+		display: none;
+	}
+
+	@keyframes card-open {
+		from {
+			opacity: 0.4;
+			transform: translateY(16px);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.cards.is-focused > li.is-open {
+			animation: none;
+		}
+	}
 </style>
+
+<script>
+	// Con JavaScript, el detalle empieza oculto; sin JavaScript se ve debajo de su tarjeta
+	document.querySelectorAll<HTMLElement>('[data-cards]').forEach((list) => {
+		const cards = Array.from(list.querySelectorAll<HTMLElement>('[data-card]'));
+		cards.forEach((li) => {
+			const more = li.querySelector<HTMLButtonElement>('[data-more]');
+			const detail = li.querySelector<HTMLElement>('[data-detail]');
+			const back = li.querySelector<HTMLButtonElement>('[data-back]');
+			if (!more || !detail || !back) return;
+			detail.hidden = true;
+
+			const open = () => {
+				list.classList.add('is-focused');
+				li.classList.add('is-open');
+				detail.hidden = false;
+				more.setAttribute('aria-expanded', 'true');
+				detail.querySelector<HTMLElement>('.card__detail-title')?.focus({ preventScroll: true });
+				li.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+			};
+			const close = () => {
+				list.classList.remove('is-focused');
+				li.classList.remove('is-open');
+				detail.hidden = true;
+				more.setAttribute('aria-expanded', 'false');
+				more.focus({ preventScroll: true });
+				li.scrollIntoView({ block: 'center' });
+			};
+
+			more.addEventListener('click', open);
+			back.addEventListener('click', close);
+			li.addEventListener('keydown', (e) => {
+				if (e.key === 'Escape' && li.classList.contains('is-open')) close();
+			});
+		});
+	});
+</script>

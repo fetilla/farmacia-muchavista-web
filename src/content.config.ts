@@ -154,19 +154,50 @@ const horario = defineCollection({
 });
 
 const marcas = defineCollection({
-	loader: yamlConfig('marcas.yaml', 'list'),
-	schema: z.object({
-		nombre: z.string(),
-		categoria: z.string(),
-		descripcion: z.string(),
-		foto: z.string().optional(),
-		provisional: z.boolean().default(false),
-		orden: z.number(),
-	}),
+	loader: yamlConfig('marcas.yaml', 'single'),
+	schema: z
+		.object({
+			categorias: z.array(z.string()).min(1),
+			marcas: z.array(
+				z.object({
+					nombre: z.string(),
+					categoria: z.string(),
+					descripcion: z.string(),
+					foto: z.string().optional(),
+				}),
+			),
+		})
+		.superRefine((data, ctx) => {
+			const seen = new Set<string>();
+			data.marcas.forEach((m, i) => {
+				if (!data.categorias.includes(m.categoria)) {
+					ctx.addIssue({
+						code: 'custom',
+						path: ['marcas', i, 'categoria'],
+						message: `"${m.categoria}" (marca ${m.nombre}) no está en la lista "categorias". Opciones: ${data.categorias.join(', ')}`,
+					});
+				}
+				const key = m.nombre.toLowerCase();
+				if (seen.has(key)) {
+					ctx.addIssue({ code: 'custom', path: ['marcas', i, 'nombre'], message: `la marca "${m.nombre}" está repetida` });
+				}
+				seen.add(key);
+			});
+		}),
 });
 
 const tarjeta = z.object({
 	titulo: z.string(),
+	detalle: z.object({ titulo: z.string(), texto: z.string() }).optional(),
+	descuento: z.string().optional(),
+	precio: z.object({ antes: z.string(), ahora: z.string() }).optional(),
+	enlace: z
+		.object({
+			texto: z.string(),
+			seccion: z.enum(['inicio', 'nosotros', 'servicios', 'marcas', 'promociones', 'actualidad', 'contacto']),
+			categoria: z.string().optional(),
+		})
+		.optional(),
 	texto: z.string().optional(),
 	icono: z.string().optional(),
 	etiqueta: z.string().optional(),
@@ -181,8 +212,10 @@ const secciones = defineCollection({
 		titulo: z.string(),
 		subtitulo: z.string().optional(),
 		parrafos: z.array(z.string()).optional(),
-		frase_destacada: z.string().optional(),
+		lema: z.string().optional(),
+		descripcion_seo: z.string().optional(),
 		tarjetas: z.array(tarjeta).optional(),
+		nota: z.string().optional(),
 		video: z
 			.object({ desde: z.number().min(0), hasta: z.number().min(0) })
 			.refine((v) => v.hasta > v.desde, { message: '"hasta" debe ser mayor que "desde"' })

@@ -8,7 +8,7 @@ Cada fichero `.yaml` es texto normal: ábrelo, cambia el valor entre comillas y 
 | `contacto.yaml` | Nombre, dirección, enlace de Google Maps, WhatsApp, teléfono, Instagram y correo |
 | `horario.yaml` | Horario de invierno y de verano, y qué fechas aplica cada uno |
 | `marcas.yaml` | Las marcas de la sección "Marcas" |
-| `secciones.yaml` | Los textos de Inicio, Nosotros, Servicios, Marcas, Promociones, Actualidad y Contacto, y el tramo de vídeo de cada sección |
+| `secciones.yaml` | Los textos de Inicio, Nosotros, Servicios, Marcas, Promociones, Actualidad y Contáctanos, y el tramo de vídeo de cada sección |
 
 ## Cómo ver los cambios
 
@@ -38,18 +38,36 @@ Para comprobar cómo se ve el horario en otra fecha, abre la web con `?fecha=` a
 
 ## Añadir o cambiar una marca
 
-1. Copia un bloque de `marcas.yaml` y cambia `nombre`, `categoria` y `descripcion`.
+`marcas.yaml` tiene dos partes:
+
+- `categorias`: la lista oficial de categorías, en el orden de los filtros. Una categoría sin marcas no se muestra.
+- `marcas`: la lista de marcas.
+
+1. Copia un bloque de `marcas` y cambia `nombre`, `categoria` y `descripcion`. La `categoria` debe estar escrita **exactamente igual** que en la lista `categorias`; si no, el build avisa.
 2. Si tienes foto o logo, guárdalo en `src/assets/marcas/` (por ejemplo `eucerin.webp`) y añade `foto: "eucerin.webp"`. Sin foto se muestran las iniciales de la marca.
-3. Las categorías nuevas aparecen solas en los filtros.
-4. Cuando el texto sea definitivo, quita `provisional: true`.
+3. Para una categoría nueva, añádela primero a `categorias` en la posición donde quieras verla.
+4. Se muestran las primeras 8 marcas; un separador "Ver todas las marcas" despliega el resto.
 
 ## Cambiar los textos de las secciones
 
 En `secciones.yaml`, cada sección tiene `titulo`, `antetitulo`, `subtitulo`, `parrafos` y `tarjetas`.
+`lema` (en Nosotros) es la frase corta que se muestra en grande, palabra a palabra.
+`descripcion_seo` (en Inicio) es el texto que muestran Google y las redes al compartir la web.
+
+Campos opcionales de las tarjetas:
+
+- `detalle: { titulo, texto }`: botón "Más información" que oculta el resto de tarjetas y muestra ese texto ampliado (por ahora, Control de tensión).
+- `descuento`: texto destacado de una promoción, por ejemplo `"-20 %"`.
+- `precio: { antes, ahora }`: muestra el precio anterior tachado y el nuevo, por ejemplo `{ antes: "29,90 €", ahora: "19,90 €" }`.
+- `etiqueta`: texto pequeño, por ejemplo la vigencia `"Hasta el 31 de octubre"`.
+- `enlace: { texto, seccion, categoria }`: enlace a otra sección. Con `seccion: "marcas"` y `categoria`, abre Marcas con ese filtro.
+
+`nota` (en una sección) es un texto pequeño bajo las tarjetas, por ejemplo las condiciones de las promociones.
+
 Los iconos de las tarjetas son nombres de [Phosphor Icons](https://phosphoricons.com), por ejemplo `heartbeat` o `leaf`.
 Si escribes un nombre que no existe, el build te avisa.
 
-`provisional: true` marca los textos de ejemplo. En desarrollo se ve una etiqueta "Texto provisional" sobre la sección; en la web publicada no aparece. Cuando el texto sea definitivo, cámbialo a `provisional: false`.
+`provisional: true` es solo un recordatorio interno de que el texto está pendiente de revisión: no se muestra en la web. Cuando el texto sea definitivo, cámbialo a `provisional: false`.
 
 `video: { desde, hasta }` indica qué segundos del vídeo de fondo acompañan a cada sección mientras se hace scroll. El vídeo dura 35,29 s.
 

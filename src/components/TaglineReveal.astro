@@ -2,12 +2,14 @@
 /** Frase destacada: cada palabra pasa de tono apagado a color pleno al hacer scroll. */
 interface Props {
 	text: string;
+	/** "lema": frase corta mostrada más grande, como lema de la farmacia */
+	size?: 'frase' | 'lema';
 }
-const { text } = Astro.props;
+const { text, size = 'frase' } = Astro.props;
 const words = text.split(/\s+/).filter(Boolean);
 ---
 
-<div class="tagline" data-tagline>
+<div class:list={['tagline', `tagline--${size}`]} data-tagline>
 	<p class="tagline__text">
 		<span class="sr-only">{text}</span>
 		<span aria-hidden="true">
@@ -45,6 +47,27 @@ const words = text.split(/\s+/).filter(Boolean);
 		.tagline__text {
 			font-size: 3rem;
 			line-height: 1.1;
+		}
+	}
+
+	.tagline--lema {
+		max-width: none;
+		justify-self: start;
+	}
+
+	.tagline--lema .tagline__text {
+		font-size: 2.25rem;
+		line-height: 2.5rem;
+		letter-spacing: -0.02em;
+	}
+
+	@media (min-width: 768px) {
+		.tagline--lema {
+			padding: var(--s-600) var(--s-700);
+		}
+		.tagline--lema .tagline__text {
+			font-size: 3.75rem;
+			line-height: 1;
 		}
 	}
 

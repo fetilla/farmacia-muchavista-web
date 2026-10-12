@@ -9,7 +9,8 @@ const links = (['inicio', 'nosotros', 'servicios', 'marcas', 'promociones', 'act
 	id,
 	label: secciones[id].menu,
 }));
-const tel = `tel:${contacto.telefono.numero}`;
+const contactoHref = '#contacto';
+const contactoLabel = secciones.contacto.menu;
 ---
 
 <header class="header" data-header>
@@ -32,9 +33,9 @@ const tel = `tel:${contacto.telefono.numero}`;
 			</ul>
 		</nav>
 
-		<a class="btn btn--primary btn--sm header__cta" href={tel}>
-			<Icon name="phone" size={18} />
-			<span>Llámanos</span>
+		<a class="btn btn--primary btn--sm header__cta" href={contactoHref} data-nav-link="contacto">
+			<Icon name="chat-circle-text" size={18} />
+			<span>{contactoLabel}</span>
 		</a>
 
 		<button
@@ -65,9 +66,9 @@ const tel = `tel:${contacto.telefono.numero}`;
 			</ul>
 		</nav>
 		<div class="menu__actions" style={`--i:${links.length}`}>
-			<a class="btn btn--primary" href={tel}>
-				<Icon name="phone" size={20} />
-				Llamar al {contacto.telefono.visible}
+			<a class="btn btn--primary" href={contactoHref} data-menu-link>
+				<Icon name="chat-circle-text" size={20} />
+				{contactoLabel}
 			</a>
 		</div>
 	</div>
@@ -173,6 +174,14 @@ const tel = `tel:${contacto.telefono.numero}`;
 	.header__cta {
 		margin-left: auto;
 		flex: none;
+	}
+
+	/* Activo al estar en la sección Contáctanos (ya no hay enlace "Contacto" en el menú) */
+	.header__cta[aria-current='location'] {
+		background: var(--ink);
+		box-shadow:
+			0 0 0 3px rgb(43 179 177 / 0.45),
+			0 8px 24px rgb(14 58 91 / 0.24);
 	}
 
 	@media (max-width: 480px) {

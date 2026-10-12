@@ -1,12 +1,20 @@
 # Textos de cada sección de la página.
 #
 # Campos disponibles en cada sección (todos opcionales salvo "titulo"):
-#   menu:         texto del enlace en el menú
+#   menu:         texto del enlace en el menú (en "contacto", texto del botón de la cabecera)
 #   antetitulo:   línea pequeña encima del título
 #   titulo:       título principal de la sección
 #   subtitulo:    frase de apoyo bajo el título
 #   parrafos:     lista de párrafos
-#   tarjetas:     lista de tarjetas { titulo, texto, icono, etiqueta, fecha }
+#   lema:         frase corta destacada en grande (Nosotros)
+#   descripcion_seo: texto para Google y al compartir la web (solo Inicio)
+#   tarjetas:     lista de tarjetas { titulo, texto, icono, etiqueta, fecha, detalle, descuento, precio, enlace }
+#                 detalle (opcional): { titulo, texto } añade un botón "Más información"
+#                 descuento (opcional): texto destacado, p. ej. "-20 %"
+#                 precio (opcional): { antes, ahora } muestra el precio anterior tachado
+#                 enlace (opcional): { texto, seccion, categoria } enlace a otra sección
+#                   (con "categoria", abre Marcas con ese filtro)
+#   nota:         texto pequeño bajo las tarjetas (p. ej. condiciones de las promociones)
 #                 icono: nombre de un icono de Phosphor (https://phosphoricons.com), p. ej. "heartbeat"
 #   video:        tramo del vídeo de fondo en segundos { desde, hasta }
 #   provisional:  true mientras el texto sea de ejemplo (se marca en desarrollo)
@@ -16,8 +24,9 @@
 inicio:
   menu: "Inicio"
   antetitulo: "Farmacia en Playa Muchavista, El Campello"
-  titulo: "Tu farmacia de confianza, a un paseo del mar"
-  subtitulo: "Consejo farmacéutico cercano, dermocosmética y cuidado para toda la familia, todos los días del año junto a la playa."
+  titulo: "Tu farmacia de confianza, a un paso de la playa"
+  subtitulo: "Consejo farmacéutico cercano, servicios, dermofarmacia y cuidado para toda la familia."
+  descripcion_seo: "Farmacia Muchavista en Playa Muchavista, El Campello. Consejo farmacéutico cercano, servicios, dermofarmacia, control de tensión y cuidado para toda la familia."
   video: { desde: 0, hasta: 5.04 }
   provisional: true
 
@@ -26,9 +35,9 @@ nosotros:
   antetitulo: "Nosotros"
   titulo: "Un equipo que te conoce por tu nombre"
   parrafos:
-    - "Desde nuestro mostrador en Muchavista acompañamos a vecinos y veraneantes con la misma calma: escuchando primero y recomendando después."
+    - "Desde nuestro mostrador acompañamos a vecinos y veraneantes con la misma calma: escuchando primero y recomendando después."
     - "Elena Pérez Belda y su equipo combinan formación sanitaria continua con algo que no se aprende en los libros: el trato de una farmacia de barrio."
-  frase_destacada: "Cuidamos de tu salud con la cercanía de siempre y el rigor de un equipo sanitario."
+  lema: "Cercanía, pasión y profesión"
   video: { desde: 5.04, hasta: 10.08 }
   provisional: true
 
@@ -41,12 +50,15 @@ servicios:
     - titulo: "Consejo farmacéutico"
       texto: "Resolvemos tus dudas sobre medicación, interacciones y pequeñas dolencias con tiempo para escucharte."
       icono: "chat-circle-text"
-    - titulo: "Dermocosmética"
-      texto: "Analizamos tu piel y te recomendamos una rutina adaptada, también para después del sol."
+    - titulo: "Dermofarmacia"
+      texto: "Analizamos tu piel y te recomendamos una rutina de dermofarmacia adaptada, también para después del sol."
       icono: "sparkle"
     - titulo: "Control de tensión"
       texto: "Medimos tu tensión arterial en nuestra cabina y te explicamos los resultados al momento."
       icono: "heartbeat"
+      detalle:
+        titulo: "Seguimiento de Tensión Arterial, Pulso y Detección de Arritmias"
+        texto: "Medición rigurosa siguiendo las directrices de Guías clínicas especializadas como la Guía ESC 2024, Guía AHA/ACC. Se realiza mediante el dispositivo de última generación Omron X7 Smart Afib (clínicamente validado), manguitos adaptados y un reposo previo de 5 minutos en un entorno tranquilo para evitar sesgos. Tras varias tomas válidas, se elabora un informe personalizado con tus valores, pautas de ejercicio y recomendaciones nutricionales para cuidar de tu corazón."
     - titulo: "Nutrición y bienestar"
       texto: "Te orientamos con complementos y hábitos para el descanso, la digestión y las defensas."
       icono: "leaf"
@@ -71,47 +83,56 @@ promociones:
   menu: "Promociones"
   antetitulo: "Promociones"
   titulo: "Ofertas de temporada"
-  subtitulo: "Cada mes renovamos nuestro expositor con descuentos en solares, dermocosmética y cuidado infantil."
+  subtitulo: "Descuentos en dermofarmacia, protección solar y complementos alimenticios. Consulta las condiciones en la farmacia."
   tarjetas:
-    - titulo: "Protección solar"
-      texto: "Segunda unidad al 40 % en una selección de fotoprotectores faciales y corporales."
-      etiqueta: "Hasta el 31 de agosto"
-      icono: "tag"
-    - titulo: "Rutina facial"
-      texto: "Llévate un neceser de regalo con la compra de dos productos de tratamiento facial."
-      etiqueta: "Unidades limitadas"
-      icono: "sparkle"
-    - titulo: "Cuidado del bebé"
-      texto: "Un 15 % de descuento en higiene infantil para los más pequeños de la casa."
-      etiqueta: "Este mes"
-      icono: "baby"
-  video: { desde: 20.17, hasta: 30.25 }
-  provisional: true
+    - titulo: "Lierac"
+      texto: "Hasta 40 € de descuento llevando 2 unidades (según la gama)."
+      descuento: "Hasta -40 €"
+      etiqueta: "Hasta el 31 de octubre"
+    - titulo: "Acniben · gama acné"
+      texto: "20 % de descuento en la gama acné de Acniben."
+      descuento: "-20 %"
+      etiqueta: "Hasta el 31 de octubre"
+    - titulo: "Filorga · solar antiedad SPF50+"
+      texto: "Protector solar antiedad SPF50+."
+      precio: { antes: "29,90 €", ahora: "19,90 €" }
+      etiqueta: "Hasta el 31 de octubre"
+    - titulo: "Effaclar · La Roche-Posay"
+      texto: "20 % de descuento en la gama Effaclar."
+      descuento: "-20 %"
+      etiqueta: "Hasta el 31 de octubre"
+    - titulo: "Dorminatur"
+      texto: "20 % de descuento en Dorminatur."
+      descuento: "-20 %"
+      etiqueta: "Hasta el 31 de octubre"
+    - titulo: "Solgar · Bisglicinato de magnesio"
+      texto: "20 % de descuento en Bisglicinato de magnesio de Solgar."
+      descuento: "-20 %"
+      etiqueta: "Hasta el 31 de octubre"
+  nota: "Promociones válidas hasta el 31 de octubre de 2026. Consulta condiciones en la farmacia."
+  video: { desde: 20.17, hasta: 25.21 }
+  provisional: false
 
 actualidad:
   menu: "Actualidad"
   antetitulo: "Actualidad"
-  titulo: "Novedades y consejos de salud"
-  subtitulo: "Lo que está pasando en la farmacia y recomendaciones para cada época del año."
+  titulo: "Novedades de la farmacia"
+  subtitulo: "Lo que está pasando en la farmacia."
   tarjetas:
-    - titulo: "Cómo elegir tu protector solar este verano"
-      texto: "Factor, textura y resistencia al agua: te explicamos qué mirar en la etiqueta antes de ir a la playa."
-      fecha: "2026-06-18"
-      icono: "newspaper-clipping"
-    - titulo: "Nueva cabina de medición de tensión"
-      texto: "Ya puedes controlar tu tensión arterial en la farmacia de forma gratuita, sin cita previa."
-      fecha: "2026-05-07"
-      icono: "heartbeat"
-    - titulo: "Picaduras de medusa: qué hacer y qué evitar"
-      texto: "Primeros auxilios sencillos para un susto frecuente en nuestras playas durante el verano."
-      fecha: "2026-07-23"
-      icono: "first-aid-kit"
-  video: { desde: 30.25, hasta: 35.29 }
-  provisional: true
+    - titulo: "Colaboración solidaria con la Asociación Española Contra el Cáncer"
+      texto: "Colaboramos con la sede de San Juan de Alicante de la Asociación Española Contra el Cáncer: donamos el 100 % de lo recaudado con los productos asociados."
+      icono: "hand-heart"
+    - titulo: "Nueva marca en Bebé y maternidad: Kiokids"
+      texto: "Incorporamos Kiokids, con accesorios de puericultura para el día a día del bebé: alimentación, dentición, baño e higiene."
+      icono: "baby"
+      enlace: { texto: "Ver en Marcas", seccion: "marcas", categoria: "Bebé y maternidad" }
+  video: { desde: 25.21, hasta: 30.25 }
+  provisional: false
 
 contacto:
-  menu: "Contacto"
+  menu: "Contáctanos"
   antetitulo: "Contáctanos"
   titulo: "Estamos aquí para ayudarte"
   subtitulo: "Escríbenos por WhatsApp, llámanos o pásate por la farmacia. Te atendemos encantados."
+  video: { desde: 30.25, hasta: 35.29 }
   provisional: false

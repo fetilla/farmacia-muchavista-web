@@ -1,51 +1,118 @@
 # Marcas que se muestran en la sección "Marcas".
 #
-# Para añadir una marca, copia un bloque y cambia los datos:
-#   nombre:       nombre de la marca (obligatorio)
-#   categoria:    categoría para agrupar y filtrar (obligatorio)
-#   foto:         nombre del archivo dentro de src/assets/marcas/ (opcional).
-#                 Si no hay foto, se muestra un distintivo con las iniciales.
-#   descripcion:  texto breve (obligatorio)
-#   provisional:  true mientras el texto sea de ejemplo
+# 1) "categorias": lista oficial de categorías, en el orden en que aparecen los filtros.
+#    Una categoría sin marcas no se muestra como filtro.
 #
-# El orden de la lista es el orden en la web.
+# 2) "marcas": para añadir una marca, copia un bloque y cambia los datos:
+#      nombre:       nombre de la marca (obligatorio)
+#      categoria:    una de las categorías de arriba, escrita igual (obligatorio)
+#      foto:         nombre del archivo dentro de src/assets/marcas/ (opcional).
+#                    Si no hay foto, se muestra un distintivo con las iniciales.
+#      descripcion:  texto breve (obligatorio)
+#
+# El orden de la lista de marcas es el orden en la web.
 
-- nombre: "Eucerin"
-  categoria: "Dermocosmética"
-  descripcion: "Cuidado dermatológico para pieles secas, sensibles o con tendencia atópica, con texturas pensadas para el día a día."
-  provisional: true
+categorias:
+  - "Dermofarmacia"
+  - "Protección solar"
+  - "Bebé y maternidad"
+  - "Complementos alimenticios"
+  - "Salud y botiquín"
+  - "Bucodental"
+  - "Ortopedia y deporte"
 
-- nombre: "La Roche-Posay"
-  categoria: "Dermocosmética"
-  descripcion: "Fórmulas recomendadas por dermatólogos para pieles sensibles, con una gama solar muy completa para la playa."
-  provisional: true
+marcas:
+  # ── Dermofarmacia ──
+  - nombre: "Eucerin"
+    categoria: "Dermofarmacia"
+    descripcion: "Cuidado dermatológico para pieles secas, sensibles o con tendencia atópica, con texturas pensadas para el día a día."
 
-- nombre: "Lierac"
-  categoria: "Dermocosmética"
-  descripcion: "Tratamientos faciales y corporales de inspiración francesa: antiedad, firmeza y luminosidad."
-  provisional: true
+  - nombre: "La Roche-Posay"
+    categoria: "Dermofarmacia"
+    descripcion: "Fórmulas recomendadas por dermatólogos para pieles sensibles, con una gama solar muy completa para la playa."
 
-- nombre: "ISDIN"
-  categoria: "Protección solar"
-  descripcion: "Fotoprotección de textura ligera para toda la familia, también en formato spray y para pieles atópicas."
-  provisional: true
+  - nombre: "Lierac"
+    categoria: "Dermofarmacia"
+    descripcion: "Tratamientos faciales y corporales de inspiración francesa: antiedad, firmeza y luminosidad."
 
-- nombre: "Mustela"
-  categoria: "Bebé y maternidad"
-  descripcion: "Higiene y cuidado de la piel del bebé desde el primer día, y productos para el embarazo y la lactancia."
-  provisional: true
+  - nombre: "Avène"
+    categoria: "Dermofarmacia"
+    descripcion: "Agua termal y cuidados calmantes para pieles reactivas que necesitan algo de alivio después del sol."
 
-- nombre: "Avène"
-  categoria: "Dermocosmética"
-  descripcion: "Agua termal y cuidados calmantes para pieles reactivas que necesitan algo de alivio después del sol."
-  provisional: true
+  - nombre: "Acniben"
+    categoria: "Dermofarmacia"
+    descripcion: "Gama de ISDIN para pieles grasas y con tendencia acneica: limpieza, control de brillos y tratamiento de imperfecciones."
 
-- nombre: "Arkopharma"
-  categoria: "Nutrición y bienestar"
-  descripcion: "Complementos a base de plantas para el descanso, la digestión y las defensas, con nuestro consejo personalizado."
-  provisional: true
+  - nombre: "Filorga"
+    categoria: "Dermofarmacia"
+    descripcion: "Laboratorio francés nacido en 1978 de la medicina estética, con cuidados faciales antiedad y protección solar."
 
-- nombre: "Cinfa"
-  categoria: "Salud y botiquín"
-  descripcion: "Productos de botiquín, cuidado bucal y salud cotidiana para tener siempre a mano en casa o de vacaciones."
-  provisional: true
+  # ── Protección solar ──
+  - nombre: "ISDIN"
+    categoria: "Protección solar"
+    descripcion: "Fotoprotección de textura ligera para toda la familia, también en formato spray y para pieles atópicas."
+
+  # ── Bebé y maternidad ──
+  - nombre: "Mustela"
+    categoria: "Bebé y maternidad"
+    descripcion: "Higiene y cuidado de la piel del bebé desde el primer día, y productos para el embarazo y la lactancia."
+
+  - nombre: "Kiokids"
+    categoria: "Bebé y maternidad"
+    descripcion: "Accesorios de puericultura para el día a día del bebé: alimentación, dentición, baño e higiene."
+
+  # ── Complementos alimenticios ──
+  - nombre: "Solgar"
+    categoria: "Complementos alimenticios"
+    descripcion: "Marca estadounidense fundada en 1947, con una amplia gama de vitaminas, minerales y complementos nutricionales."
+
+  - nombre: "Vitaceutics"
+    categoria: "Complementos alimenticios"
+    descripcion: "Línea de complementos nutricionales de Faes Farma, con fórmulas a base de vitaminas, minerales y extractos vegetales."
+
+  - nombre: "Kobho"
+    categoria: "Complementos alimenticios"
+    descripcion: "Marca española de complementos alimenticios con fórmulas de probióticos, colágeno, creatina y descanso."
+
+  - nombre: "Sweet by Asun Arias"
+    categoria: "Complementos alimenticios"
+    descripcion: "Complementos nutricionales pensados para la mujer, con fórmulas numeradas para el climaterio, el descanso, la piel y las mucosas."
+
+  - nombre: "Dorminatur"
+    categoria: "Complementos alimenticios"
+    descripcion: "Línea de Esteve especializada en el descanso, con complementos a base de melatonina, pasiflora y otros ingredientes."
+
+  # ── Salud y botiquín ──
+  - nombre: "Cinfa"
+    categoria: "Salud y botiquín"
+    descripcion: "Productos de botiquín, cuidado bucal y salud cotidiana para tener siempre a mano en casa o de vacaciones."
+
+  # ── Bucodental ──
+  - nombre: "Vitis"
+    categoria: "Bucodental"
+    descripcion: "Gama completa de higiene bucodental de Dentaid: pastas, colutorios, cepillos y seda dental para cada necesidad."
+
+  - nombre: "Lacer"
+    categoria: "Bucodental"
+    descripcion: "Laboratorio español con larga tradición en salud bucodental: dentífricos y colutorios para encías, sensibilidad y cuidado diario."
+
+  - nombre: "Bexident"
+    categoria: "Bucodental"
+    descripcion: "Línea bucodental de ISDIN para el cuidado de encías y la prevención de caries, con colutorios, dentífricos y geles."
+
+  - nombre: "Oraldine"
+    categoria: "Bucodental"
+    descripcion: "Colutorios para una boca fresca y limpia cada día, con opciones para encías y protección anticaries."
+
+  - nombre: "Fluocaril"
+    categoria: "Bucodental"
+    descripcion: "Marca francesa nacida en 1946 de la mano de farmacéuticos, conocida por sus dentífricos con flúor contra la caries."
+
+  # ── Ortopedia y deporte ──
+  - nombre: "Prim"
+    categoria: "Ortopedia y deporte"
+    descripcion: "Compañía española de ortopedia con muñequeras, rodilleras, tobilleras y otras ayudas para el día a día y el deporte."
+
+  - nombre: "Farmalastic"
+    categoria: "Ortopedia y deporte"
+    descripcion: "Línea de ortopedia de Cinfa con sujeciones, soportes y medias para la vida diaria y la práctica deportiva."

@@ -17,7 +17,6 @@ interface Props {
 
 const { id, seccion, headingLevel = 'h2', align = 'left', class: className } = Astro.props;
 const Heading = headingLevel;
-const showBadge = import.meta.env.DEV && seccion.provisional;
 ---
 
 <section
@@ -32,7 +31,6 @@ const showBadge = import.meta.env.DEV && seccion.provisional;
 	{seccion.provisional && <Fragment set:html={`<!-- TODO: texto provisional en src/config/secciones.yaml (${id}) -->`} />}
 	<div class="container chapter__inner">
 		<div class="chapter__card reveal">
-			{showBadge && <span class="provisional-badge">Texto provisional</span>}
 			{seccion.antetitulo && <p class="eyebrow">{seccion.antetitulo}</p>}
 			<Heading id={`${id}-titulo`} class="title">{seccion.titulo}</Heading>
 			{seccion.subtitulo && <p class="lead">{seccion.subtitulo}</p>}
@@ -40,6 +38,7 @@ const showBadge = import.meta.env.DEV && seccion.provisional;
 			<slot name="card" />
 		</div>
 		<slot />
+		{seccion.nota && <p class="chapter__nota reveal">{seccion.nota}</p>}
 	</div>
 </section>
 
@@ -81,6 +80,21 @@ const showBadge = import.meta.env.DEV && seccion.provisional;
 	.chapter--center .chapter__card {
 		justify-self: center;
 		text-align: center;
+	}
+
+	.chapter__nota {
+		justify-self: start;
+		padding: var(--s-75) var(--s-200);
+		border-radius: 9999px;
+		background: var(--card);
+		color: var(--ink);
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		font-weight: 600;
+	}
+
+	.chapter--right .chapter__nota {
+		justify-self: end;
 	}
 
 	.chapter__p {

@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { getContacto, getHorario, pharmacyJsonLd } from '../lib/config';
+import { getContacto, getHorario, getSecciones, pharmacyJsonLd } from '../lib/config';
 
 interface Props {
 	title?: string;
@@ -10,10 +10,11 @@ interface Props {
 
 const contacto = await getContacto();
 const horario = await getHorario();
+const { inicio } = await getSecciones();
 
 const {
 	title = `${contacto.nombre} · Farmacia en Playa Muchavista, El Campello`,
-	description = `${contacto.nombre} en ${contacto.direccion.zona}. Consejo farmacéutico, dermocosmética, control de tensión y cuidado infantil junto a la playa.`,
+	description = inicio.descripcion_seo ?? inicio.subtitulo ?? contacto.nombre,
 	noindex = false,
 } = Astro.props;
 

@@ -1,11 +1,10 @@
 ---
-import Horario from './Horario.astro';
+import HorarioLocalizacion from './HorarioLocalizacion.astro';
 import Icon from './Icon.astro';
 import { getContacto, getSecciones, whatsappUrl } from '../lib/config';
 
 const contacto = await getContacto();
 const { inicio } = await getSecciones();
-const showBadge = import.meta.env.DEV && inicio.provisional;
 ---
 
 <section
@@ -18,7 +17,6 @@ const showBadge = import.meta.env.DEV && inicio.provisional;
 >
 	{inicio.provisional && <Fragment set:html="<!-- TODO: texto provisional en src/config/secciones.yaml (inicio) -->" />}
 	<div class="container hero__top">
-		{showBadge && <span class="provisional-badge">Texto provisional</span>}
 		{inicio.antetitulo && <p class="hero__eyebrow">{inicio.antetitulo}</p>}
 		<h1 id="inicio-titulo" class="hero__title">{inicio.titulo}</h1>
 		{inicio.subtitulo && <p class="hero__sub">{inicio.subtitulo}</p>}
@@ -39,27 +37,7 @@ const showBadge = import.meta.env.DEV && inicio.provisional;
 	</div>
 
 	<div class="container hero__info">
-		<div class="info-card reveal">
-			<div class="info-card__part">
-				<h2 class="info-card__title">Horario</h2>
-				<Horario />
-			</div>
-			<div class="info-card__part info-card__part--location">
-				<h2 class="info-card__title">Localización</h2>
-				<address class="hero__address">
-					<Icon name="map-pin" size={24} />
-					<span>
-						{contacto.direccion.calle}<br />
-						{contacto.direccion.zona}<br />
-						{contacto.direccion.cp}, {contacto.direccion.provincia}
-					</span>
-				</address>
-				<a class="btn btn--light" href={contacto.maps_url} target="_blank" rel="noopener">
-					<Icon name="navigation-arrow" size={20} />
-					Cómo llegar
-				</a>
-			</div>
-		</div>
+		<HorarioLocalizacion />
 	</div>
 </section>
 
@@ -176,71 +154,4 @@ const showBadge = import.meta.env.DEV && inicio.provisional;
 		margin-top: 40vh;
 	}
 
-	.info-card {
-		display: grid;
-		gap: var(--s-400);
-		padding: var(--s-400);
-		border-radius: 24px;
-		background: var(--card);
-		backdrop-filter: blur(16px);
-		-webkit-backdrop-filter: blur(16px);
-		box-shadow: 0 24px 64px rgb(14 58 91 / 0.2);
-	}
-
-	@media (min-width: 960px) {
-		.info-card {
-			grid-template-columns: 1.7fr 1fr;
-			gap: var(--s-500);
-		}
-	}
-
-	@media (max-width: 767px) {
-		.info-card {
-			padding: var(--s-300);
-		}
-	}
-
-	.info-card__part {
-		display: grid;
-		align-content: start;
-		gap: var(--s-200);
-	}
-
-	/* Separador entre horario y localización: debajo en móvil, a la izquierda en escritorio */
-	.info-card__part--location {
-		padding-top: var(--s-400);
-		border-top: 1px solid var(--line);
-	}
-
-	@media (min-width: 960px) {
-		.info-card__part--location {
-			padding-top: 0;
-			padding-left: var(--s-500);
-			border-top: 0;
-			border-left: 1px solid var(--line);
-		}
-	}
-
-	.info-card__title {
-		font-size: 1.5rem;
-		line-height: 2rem;
-	}
-
-	.hero__address {
-		display: flex;
-		gap: var(--s-100);
-		font-style: normal;
-		font-size: 1.125rem;
-		line-height: 1.75rem;
-	}
-
-	.hero__address :global(.icon) {
-		flex: none;
-		color: var(--sea);
-		margin-top: 2px;
-	}
-
-	.info-card .btn {
-		justify-self: start;
-	}
 </style>

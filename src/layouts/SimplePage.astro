@@ -25,7 +25,6 @@ const { title, description, provisional = false, noindex = false } = Astro.props
 	<main id="contenido" class="container simple">
 		{provisional && <Fragment set:html="<!-- TODO: texto legal provisional, pendiente de revisión -->" />}
 		<h1 class="title">{title}</h1>
-		{provisional && <p class="simple__note">Texto provisional pendiente de revisión legal.</p>}
 		<div class="simple__body"><slot /></div>
 	</main>
 	<Footer />
@@ -53,16 +52,6 @@ const { title, description, provisional = false, noindex = false } = Astro.props
 		gap: var(--s-300);
 		max-width: 760px;
 		padding: var(--s-700) 0 var(--s-900);
-	}
-
-	.simple__note {
-		justify-self: start;
-		padding: var(--s-50) var(--s-100);
-		border-radius: 9999px;
-		background: rgb(242 131 107 / 0.2);
-		font-size: 0.875rem;
-		line-height: 1.25rem;
-		font-weight: 600;
 	}
 
 	.simple__body {

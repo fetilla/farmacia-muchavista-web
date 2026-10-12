@@ -317,19 +317,3 @@ a {
 			transform 0.7s var(--ease);
 	}
 }
-
-/* Distintivo de texto provisional (solo en desarrollo) */
-.provisional-badge {
-	position: absolute;
-	top: var(--s-100);
-	right: var(--s-100);
-	padding: var(--s-25, 2px) var(--s-75);
-	border-radius: 9999px;
-	background: var(--coral);
-	color: var(--ink);
-	font-size: 0.75rem;
-	line-height: 1rem;
-	font-weight: 700;
-	z-index: 5;
-	pointer-events: none;
-}

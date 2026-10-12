@@ -22,7 +22,7 @@ const s = await getSecciones();
 			<Hero />
 
 			<Chapter id="nosotros" seccion={s.nosotros}>
-				{s.nosotros.frase_destacada && <TaglineReveal text={s.nosotros.frase_destacada} />}
+				{s.nosotros.lema && <TaglineReveal text={s.nosotros.lema} size="lema" />}
 			</Chapter>
 
 			<Chapter id="servicios" seccion={s.servicios} align="right">
@@ -40,9 +40,9 @@ const s = await getSecciones();
 			<Chapter id="actualidad" seccion={s.actualidad}>
 				{s.actualidad.tarjetas && <Cards tarjetas={s.actualidad.tarjetas} variant="news" />}
 			</Chapter>
-		</ScrollWorld>
 
-		<Contacto />
+			<Contacto />
+		</ScrollWorld>
 	</main>
 	<Footer />
 	<WhatsAppFab />

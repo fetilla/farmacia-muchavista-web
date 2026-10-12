@@ -15,8 +15,9 @@ export async function getHorario() {
 }
 
 export async function getMarcas() {
-	const marcas = await getCollection('marcas');
-	return marcas.map((m) => m.data).sort((a, b) => a.orden - b.orden);
+	const entry = await getEntry('marcas', 'marcas');
+	if (!entry) throw new Error('No se pudo leer src/config/marcas.yaml');
+	return entry.data;
 }
 
 export async function getSecciones() {
