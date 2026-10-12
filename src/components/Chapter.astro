@@ -43,10 +43,11 @@ const Heading = headingLevel;
 </section>
 
 <style>
+	/* Sin alto mínimo: cada sección mide su contenido y el hueco entre secciones es siempre el
+	   mismo (relleno superior + inferior). El vídeo avanza en proporción a ese alto. */
 	.chapter {
 		position: relative;
-		min-height: 180vh;
-		padding: 40vh 0 var(--s-900);
+		padding: 30vh 0 var(--s-900);
 	}
 
 	.chapter__inner {
@@ -76,7 +77,6 @@ const Heading = headingLevel;
 	/* Móvil: menos recorrido entre secciones (el vídeo avanza más deprisa por cada scroll) */
 	@media (max-width: 639px) {
 		.chapter {
-			min-height: 110vh;
 			padding: 20vh 0 var(--s-600);
 		}
 		.chapter__inner {
@@ -87,11 +87,6 @@ const Heading = headingLevel;
 			padding: var(--s-200);
 			border-radius: 16px;
 		}
-	}
-
-	/* Secciones con poco contenido (Marcas, un carrusel): sin alto mínimo, solo lo que ocupan */
-	.chapter.chapter--fit {
-		min-height: 0;
 	}
 
 	.chapter--right .chapter__card {

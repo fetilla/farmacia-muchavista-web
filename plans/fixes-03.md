@@ -102,17 +102,29 @@ Fichero: `src/components/Marcas.astro`
 - [x] **4.6 Enlace de Kiokids:** en escritorio aplica el filtro; en móvil mueve el carrusel hasta la primera marca de la categoría y la selecciona.
 - [x] **4.7 Animación de aparición:** el efecto `.reveal` pasa de cada ficha al bloque entero. Dentro de un carrusel horizontal, cada ficha se animaría al entrar por el lateral.
 
-## 5. Menos scroll entre secciones en móvil
+## 5. Menos scroll entre secciones
 
-Aunque las tarjetas ya ocupaban mucho menos, cada sección seguía midiendo **1,8 pantallas** en móvil. El motivo era la altura mínima de 180vh y los 40vh de relleno superior. La página entera ocupaba **14,8 pantallas** de scroll.
+Aunque las tarjetas ya ocupaban mucho menos, cada sección seguía midiendo **1,8 pantallas**. El motivo era la altura mínima de 180vh y los 40vh de relleno superior. Las secciones con poco contenido (Marcas con el carrusel, Actualidad, Nosotros) dejaban mucho espacio vacío al final. En móvil, la página ocupaba **14,8 pantallas** de scroll.
 
-El vídeo avanza en proporción a la altura de cada sección (`scroll-world.ts`). Por eso, al acortarlas, el vídeo va más deprisa por cada gesto de scroll sin tocar el motor. Se aceptó a propósito que el vídeo vaya más rápido. Solo afecta a móvil (<640px); en escritorio no cambia nada.
+El vídeo avanza en proporción a la altura de cada sección (`scroll-world.ts`). Por eso, al acortarlas, el vídeo va más deprisa por cada gesto de scroll sin tocar el motor. Se aceptó a propósito que el vídeo vaya más rápido.
 
-- [x] **5.1** `.chapter`: `min-height` pasa de 180vh a 110vh, y el relleno de `40vh … 96px` a `20vh … 48px` (`Chapter.astro`).
-- [x] **5.2** `.contacto`: `min-height` pasa de 220vh a 130vh, y el relleno de `40vh … 90vh` a `20vh … 45vh`. Se mantiene un margen final para ver el último tramo del vídeo (`Contacto.astro`).
-- [x] **5.3** `.hero`: sin altura mínima (manda el contenido), y el recuadro de horario pasa de 40vh a 15vh bajo la portada (`Hero.astro`).
-- [x] **5.4** Resultado a 375×800: de **14,8 a 10,6 pantallas** de scroll. Ahora cada sección ocupa entre 1,1 y 1,25 pantallas; la portada ocupa 1,9 y Contáctanos 2,0. En escritorio sigue igual: 13,9 pantallas y 180vh por sección.
-- [x] **5.5 Marcas sin alto mínimo**, en móvil y en escritorio: `class="chapter--fit"` en `index.astro`. Con el carrusel, la sección quedaba medio vacía porque conservaba la altura pensada para la antigua rejilla. Ahora mide lo que ocupa su contenido. El hueco hasta Promociones baja de 467 a 208px en móvil y de 883 a 416px en escritorio. Total de scroll: 10,2 pantallas en móvil y 13,4 en escritorio. En ese tramo el vídeo avanza más deprisa.
+- [x] **5.1** `.chapter` deja de tener altura mínima (antes 180vh) en móvil y en escritorio. Cada sección mide su contenido, así que el hueco entre secciones es siempre el mismo (`Chapter.astro`):
+  - Escritorio: relleno de `30vh … 96px` (antes `40vh … 96px`).
+  - Móvil: relleno de `20vh … 48px`.
+- [x] **5.2** `.contacto` mantiene una altura mínima para dejar ver el último tramo del vídeo (`Contacto.astro`):
+  - Escritorio: 220vh con relleno de `30vh … 90vh`.
+  - Móvil: 130vh con relleno de `20vh … 45vh`.
+- [x] **5.3** `.hero` en móvil: sin altura mínima, y el recuadro de horario pasa de 40vh a 15vh bajo la portada (`Hero.astro`).
+- [x] **5.4** Resultado: huecos entre el final de una sección y el principio de la siguiente.
+
+  | Tramo | Móvil antes | Móvil ahora | Escritorio antes | Escritorio ahora |
+  |---|---|---|---|---|
+  | Nosotros → Servicios | 432px* | 272px | 900px | 400px |
+  | Marcas → Promociones | 467px | 208px | 883px | 336px |
+  | Actualidad → Contáctanos | 608px* | 272px | 1036px | 400px |
+  | **Total de scroll** | **14,8 pantallas** | **9,6** | **13,9** | **11,0** |
+
+  \* Medido con la primera reducción en móvil (secciones de 110vh), que aún dejaba estos huecos grandes.
 
 ## 6. Comprobación
 

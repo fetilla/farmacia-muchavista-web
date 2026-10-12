@@ -29,7 +29,7 @@ const s = await getSecciones();
 				{s.servicios.tarjetas && <Cards tarjetas={s.servicios.tarjetas} variant="service" />}
 			</Chapter>
 
-			<Chapter id="marcas" seccion={s.marcas} class="chapter--fit">
+			<Chapter id="marcas" seccion={s.marcas}>
 				<Marcas />
 			</Chapter>
 
