@@ -11,13 +11,17 @@ import { getMarcas } from '../lib/config';
 const { categorias: oficiales, marcas } = await getMarcas();
 /** Marcas visibles antes de pulsar "Ver todas las marcas" (en cualquier pantalla y filtro) */
 const VISIBLES = 8;
-const fotos = import.meta.glob<{ default: ImageMetadata }>('../assets/marcas/*.{png,jpg,jpeg,webp,avif,svg}', {
+// Logos y fotos: los de mapa de bits se optimizan con <Image>; los SVG se sirven tal cual
+const raster = import.meta.glob<{ default: ImageMetadata }>('../assets/marcas/*.{png,jpg,jpeg,webp,avif}', {
 	eager: true,
 });
+const vectores = import.meta.glob<string>('../assets/marcas/*.svg', { eager: true, query: '?url', import: 'default' });
 const fotoDe = (nombre?: string) => {
 	if (!nombre) return undefined;
-	const file = nombre.replace(/^marcas\//, '');
-	return fotos[`../assets/marcas/${file}`]?.default;
+	const key = `../assets/marcas/${nombre.replace(/^marcas\//, '')}`;
+	if (raster[key]) return { kind: 'raster' as const, src: raster[key].default };
+	if (vectores[key]) return { kind: 'svg' as const, src: vectores[key] };
+	throw new Error(`src/config/marcas.yaml: no se encuentra la foto "${nombre}" en src/assets/marcas/`);
 };
 const iniciales = (n: string) =>
 	n
@@ -61,9 +65,11 @@ const slug = (s: string) =>
 					const foto = fotoDe(m.foto);
 					return (
 						<li class="marca reveal" data-categoria={slug(m.categoria)}>
-							<div class="marca__media">
-								{foto ? (
-									<Image src={foto} alt={`Productos de ${m.nombre}`} width={480} class="marca__img" />
+							<div class:list={['marca__media', { 'has-logo': foto }]}>
+								{foto?.kind === 'raster' ? (
+									<Image src={foto.src} alt={`Logotipo de ${m.nombre}`} width={480} class="marca__img" />
+								) : foto?.kind === 'svg' ? (
+									<img src={foto.src} alt={`Logotipo de ${m.nombre}`} class="marca__img" loading="lazy" decoding="async" />
 								) : (
 									<span class="marca__initials" aria-hidden="true">
 										{iniciales(m.nombre)}
@@ -259,13 +265,20 @@ const slug = (s: string) =>
 		display: grid;
 		place-items: center;
 		aspect-ratio: 16 / 10;
-		background: var(--sand);
+		background: #fff;
+	}
+
+	/* Logos: enteros y centrados sobre fondo blanco */
+	.marca__media.has-logo {
+		background: #fff;
+		padding: var(--s-400) var(--s-500);
 	}
 
 	.marca__img {
 		width: 100%;
 		height: 100%;
-		object-fit: cover;
+		max-height: 96px;
+		object-fit: contain;
 	}
 
 	.marca__initials {

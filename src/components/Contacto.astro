@@ -59,9 +59,10 @@ const canales = [
 <style>
 	.contacto {
 		position: relative;
-		/* Menos alto que el resto: es la última sección y da paso directo al pie */
-		min-height: 130vh;
-		padding: 40vh 0 var(--s-700);
+		/* Última sección: margen extra al final para ver el último tramo del vídeo
+		   (hacia el mostrador) a pantalla completa antes de que aparezca el pie */
+		min-height: 220vh;
+		padding: 40vh 0 90vh;
 	}
 
 	.contacto__inner {

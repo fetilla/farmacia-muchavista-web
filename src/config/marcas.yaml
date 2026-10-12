@@ -6,8 +6,8 @@
 # 2) "marcas": para añadir una marca, copia un bloque y cambia los datos:
 #      nombre:       nombre de la marca (obligatorio)
 #      categoria:    una de las categorías de arriba, escrita igual (obligatorio)
-#      foto:         nombre del archivo dentro de src/assets/marcas/ (opcional).
-#                    Si no hay foto, se muestra un distintivo con las iniciales.
+#      foto:         logo o foto: nombre del archivo dentro de src/assets/marcas/
+#                    (png, jpg, webp o svg; opcional). Si no hay, se muestran las iniciales.
 #      descripcion:  texto breve (obligatorio)
 #
 # El orden de la lista de marcas es el orden en la web.
@@ -24,18 +24,22 @@ categorias:
 marcas:
   # ── Dermofarmacia ──
   - nombre: "Eucerin"
+    foto: "eucerin.svg"
     categoria: "Dermofarmacia"
     descripcion: "Cuidado dermatológico para pieles secas, sensibles o con tendencia atópica, con texturas pensadas para el día a día."
 
   - nombre: "La Roche-Posay"
+    foto: "la-roche-posay.png"
     categoria: "Dermofarmacia"
     descripcion: "Fórmulas recomendadas por dermatólogos para pieles sensibles, con una gama solar muy completa para la playa."
 
   - nombre: "Lierac"
+    foto: "lierac.svg"
     categoria: "Dermofarmacia"
     descripcion: "Tratamientos faciales y corporales de inspiración francesa: antiedad, firmeza y luminosidad."
 
   - nombre: "Avène"
+    foto: "avene.png"
     categoria: "Dermofarmacia"
     descripcion: "Agua termal y cuidados calmantes para pieles reactivas que necesitan algo de alivio después del sol."
 
@@ -44,6 +48,7 @@ marcas:
     descripcion: "Gama de ISDIN para pieles grasas y con tendencia acneica: limpieza, control de brillos y tratamiento de imperfecciones."
 
   - nombre: "Filorga"
+    foto: "filorga.svg"
     categoria: "Dermofarmacia"
     descripcion: "Laboratorio francés nacido en 1978 de la medicina estética, con cuidados faciales antiedad y protección solar."
 
@@ -54,6 +59,7 @@ marcas:
 
   # ── Bebé y maternidad ──
   - nombre: "Mustela"
+    foto: "mustela.png"
     categoria: "Bebé y maternidad"
     descripcion: "Higiene y cuidado de la piel del bebé desde el primer día, y productos para el embarazo y la lactancia."
 
@@ -71,6 +77,7 @@ marcas:
     descripcion: "Línea de complementos nutricionales de Faes Farma, con fórmulas a base de vitaminas, minerales y extractos vegetales."
 
   - nombre: "Kobho"
+    foto: "kobho.png"
     categoria: "Complementos alimenticios"
     descripcion: "Marca española de complementos alimenticios con fórmulas de probióticos, colágeno, creatina y descanso."
 
@@ -89,10 +96,12 @@ marcas:
 
   # ── Bucodental ──
   - nombre: "Vitis"
+    foto: "vitis.png"
     categoria: "Bucodental"
     descripcion: "Gama completa de higiene bucodental de Dentaid: pastas, colutorios, cepillos y seda dental para cada necesidad."
 
   - nombre: "Lacer"
+    foto: "lacer.png"
     categoria: "Bucodental"
     descripcion: "Laboratorio español con larga tradición en salud bucodental: dentífricos y colutorios para encías, sensibilidad y cuidado diario."
 
@@ -110,6 +119,7 @@ marcas:
 
   # ── Ortopedia y deporte ──
   - nombre: "Prim"
+    foto: "prim.png"
     categoria: "Ortopedia y deporte"
     descripcion: "Compañía española de ortopedia con muñequeras, rodilleras, tobilleras y otras ayudas para el día a día y el deporte."
 
