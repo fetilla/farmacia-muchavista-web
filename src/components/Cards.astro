@@ -1,0 +1,130 @@
+---
+/** Rejilla de tarjetas (servicios, promociones, actualidad) desde secciones.yaml */
+import Icon from './Icon.astro';
+
+interface Tarjeta {
+	titulo: string;
+	texto?: string;
+	icono?: string;
+	etiqueta?: string;
+	fecha?: string;
+}
+
+interface Props {
+	tarjetas: Tarjeta[];
+	variant?: 'service' | 'promo' | 'news';
+}
+
+const { tarjetas, variant = 'service' } = Astro.props;
+const fmt = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+const Tag = variant === 'news' ? 'article' : 'div';
+---
+
+<ul class:list={['cards', `cards--${variant}`]} role="list">
+	{
+		tarjetas.map((t, i) => (
+			<li class="reveal" style={`transition-delay:${(i % 3) * 100}ms`}>
+				<Tag class="card">
+					{t.icono && (
+						<span class="card__icon">
+							<Icon name={t.icono} size={24} />
+						</span>
+					)}
+					{t.etiqueta && <span class="card__tag">{t.etiqueta}</span>}
+					{t.fecha && <time datetime={t.fecha}>{fmt.format(new Date(`${t.fecha}T12:00:00`))}</time>}
+					<h3 class="card__title">{t.titulo}</h3>
+					{t.texto && <p class="card__text">{t.texto}</p>}
+				</Tag>
+			</li>
+		))
+	}
+</ul>
+
+<style>
+	.cards {
+		display: grid;
+		gap: var(--s-200);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	@media (min-width: 640px) {
+		.cards {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.cards {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	.cards li {
+		display: flex;
+	}
+
+	.card {
+		display: flex;
+		flex-direction: column;
+		gap: var(--s-100);
+		width: 100%;
+		padding: var(--s-300);
+		border-radius: 24px;
+		background: var(--card);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		box-shadow: 0 16px 48px rgb(14 58 91 / 0.16);
+		transition:
+			transform 0.7s var(--ease),
+			box-shadow 0.7s var(--ease);
+	}
+
+	.card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 24px 64px rgb(14 58 91 / 0.22);
+	}
+
+	.card__icon {
+		display: grid;
+		place-items: center;
+		width: 48px;
+		height: 48px;
+		border-radius: 16px;
+		background: rgb(31 143 141 / 0.12);
+		color: var(--sea);
+	}
+
+	.cards--promo .card__icon {
+		background: rgb(242 131 107 / 0.18);
+		color: #b04a33;
+	}
+
+	.card__tag {
+		align-self: flex-start;
+		padding: 2px var(--s-75);
+		border-radius: 9999px;
+		background: var(--coral);
+		color: var(--ink);
+		font-size: 0.75rem;
+		line-height: 1rem;
+		font-weight: 700;
+	}
+
+	time {
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		font-weight: 600;
+		color: var(--sea);
+	}
+
+	.card__title {
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+	}
+
+	.card__text {
+		color: var(--ink-soft);
+	}
+</style>

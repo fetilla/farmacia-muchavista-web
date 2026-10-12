@@ -1,0 +1,13 @@
+---
+import SimplePage from '../layouts/SimplePage.astro';
+import { getContacto } from '../lib/config';
+const c = await getContacto();
+---
+
+<SimplePage title="Aviso legal" provisional noindex>
+	<h2>Titular de la web</h2>
+	<p>{c.nombre}{c.titular && `, cuya titular es ${c.titular}`}, con domicilio en {c.direccion.calle}, {c.direccion.zona}, {c.direccion.cp} {c.direccion.provincia}.</p>
+	<p>Contacto: {c.telefono.visible} · {c.email}</p>
+	<h2>Uso de la web</h2>
+	<p>Esta web ofrece información general sobre la farmacia y sus servicios. La información publicada no sustituye el consejo de un profesional sanitario.</p>
+</SimplePage>

@@ -1,0 +1,89 @@
+---
+/**
+ * Sección del recorrido. Lee sus textos de src/config/secciones.yaml y declara su
+ * tramo de vídeo (data-video-start / data-video-end) para el motor de scroll.
+ */
+import type { getSecciones } from '../lib/config';
+
+type Seccion = Awaited<ReturnType<typeof getSecciones>>["inicio"];
+
+interface Props {
+	id: string;
+	seccion: Seccion;
+	headingLevel?: 'h1' | 'h2';
+	align?: 'left' | 'right' | 'center';
+	class?: string;
+}
+
+const { id, seccion, headingLevel = 'h2', align = 'left', class: className } = Astro.props;
+const Heading = headingLevel;
+const showBadge = import.meta.env.DEV && seccion.provisional;
+---
+
+<section
+	id={id}
+	class:list={['chapter', `chapter--${align}`, className]}
+	data-chapter
+	data-video-start={seccion.video?.desde}
+	data-video-end={seccion.video?.hasta}
+	data-provisional={seccion.provisional ? 'true' : undefined}
+	aria-labelledby={`${id}-titulo`}
+>
+	{seccion.provisional && <Fragment set:html={`<!-- TODO: texto provisional en src/config/secciones.yaml (${id}) -->`} />}
+	<div class="container chapter__inner">
+		<div class="chapter__card reveal">
+			{showBadge && <span class="provisional-badge">Texto provisional</span>}
+			{seccion.antetitulo && <p class="eyebrow">{seccion.antetitulo}</p>}
+			<Heading id={`${id}-titulo`} class="title">{seccion.titulo}</Heading>
+			{seccion.subtitulo && <p class="lead">{seccion.subtitulo}</p>}
+			{seccion.parrafos?.map((p) => <p class="chapter__p">{p}</p>)}
+			<slot name="card" />
+		</div>
+		<slot />
+	</div>
+</section>
+
+<style>
+	.chapter {
+		position: relative;
+		min-height: 180vh;
+		padding: 40vh 0 var(--s-900);
+	}
+
+	.chapter__inner {
+		display: grid;
+		gap: var(--s-400);
+	}
+
+	.chapter__card {
+		position: relative;
+		display: grid;
+		gap: var(--s-200);
+		max-width: 560px;
+		padding: var(--s-400);
+		border-radius: 24px;
+		background: var(--card);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		box-shadow: 0 24px 64px rgb(14 58 91 / 0.2);
+	}
+
+	@media (max-width: 767px) {
+		.chapter__card {
+			padding: var(--s-300);
+		}
+	}
+
+	.chapter--right .chapter__card {
+		justify-self: end;
+	}
+
+	.chapter--center .chapter__card {
+		justify-self: center;
+		text-align: center;
+	}
+
+	.chapter__p {
+		color: var(--ink-soft);
+	}
+</style>

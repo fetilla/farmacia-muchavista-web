@@ -1,0 +1,43 @@
+# Horario de la farmacia por temporadas.
+#
+# - "nombre", "dias" y "horas" son los textos que se ven en la web, tal cual.
+# - "vigencia" indica qué días del año aplica cada temporada (formato MM-DD).
+#   La web resalta sola la temporada vigente según la fecha del visitante.
+#   Una vigencia puede cruzar el cambio de año (p. ej. del 09-01 al 06-30).
+# - "dias_semana", "abre" y "cierra" son para el indicador "Abierto ahora" y para
+#   Google. Días: 1 = lunes … 6 = sábado, 7 = domingo. Si un día está cerrado,
+#   pon "cerrado: true" y deja fuera "abre" y "cierra".
+
+temporadas:
+  - id: invierno
+    nombre: "Horario Invierno"
+    vigencia: { desde: "09-01", hasta: "06-30" }
+    franjas:
+      - dias: "Lun. a Vie."
+        horas: "de 9:00 a 21:00 h"
+        dias_semana: [1, 2, 3, 4, 5]
+        abre: "09:00"
+        cierra: "21:00"
+      - dias: "Sáb."
+        horas: "de 9:00 a 14:00"
+        dias_semana: [6]
+        abre: "09:00"
+        cierra: "14:00"
+      - dias: "Dom."
+        horas: "cerrado"
+        dias_semana: [7]
+        cerrado: true
+
+  - id: verano
+    nombre: "Horario Verano (Julio y Agosto)"
+    vigencia: { desde: "07-01", hasta: "08-31" }
+    franjas:
+      - dias: "Lun. a Sáb."
+        horas: "de 9:00 a 21:30 h"
+        dias_semana: [1, 2, 3, 4, 5, 6]
+        abre: "09:00"
+        cierra: "21:30"
+      - dias: "Dom."
+        horas: "cerrado"
+        dias_semana: [7]
+        cerrado: true

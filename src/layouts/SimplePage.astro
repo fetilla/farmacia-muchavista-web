@@ -1,0 +1,80 @@
+---
+/** Página sencilla (legales, 404) con el logo, un botón para volver y el pie. */
+import Layout from './Layout.astro';
+import Logo from '../components/Logo.astro';
+import Icon from '../components/Icon.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+	title: string;
+	description?: string;
+	provisional?: boolean;
+	noindex?: boolean;
+}
+
+const { title, description, provisional = false, noindex = false } = Astro.props;
+---
+
+<Layout title={`${title} · Farmacia Muchavista`} description={description} noindex={noindex}>
+	<header class="simple-header">
+		<div class="container simple-header__inner">
+			<a href="/" aria-label="Farmacia Muchavista, volver a la página principal"><Logo id="logo-simple" /></a>
+			<a class="btn btn--light btn--sm" href="/"><Icon name="arrow-left" size={18} />Volver al inicio</a>
+		</div>
+	</header>
+	<main id="contenido" class="container simple">
+		{provisional && <Fragment set:html="<!-- TODO: texto legal provisional, pendiente de revisión -->" />}
+		<h1 class="title">{title}</h1>
+		{provisional && <p class="simple__note">Texto provisional pendiente de revisión legal.</p>}
+		<div class="simple__body"><slot /></div>
+	</main>
+	<Footer />
+</Layout>
+
+<style>
+	.simple-header {
+		padding: var(--s-300) 0;
+	}
+
+	.simple-header__inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--s-200);
+	}
+
+	.simple-header :global(.logo) {
+		width: auto;
+		height: 56px;
+	}
+
+	.simple {
+		display: grid;
+		gap: var(--s-300);
+		max-width: 760px;
+		padding: var(--s-700) 0 var(--s-900);
+	}
+
+	.simple__note {
+		justify-self: start;
+		padding: var(--s-50) var(--s-100);
+		border-radius: 9999px;
+		background: rgb(242 131 107 / 0.2);
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		font-weight: 600;
+	}
+
+	.simple__body {
+		display: grid;
+		gap: var(--s-200);
+		color: var(--ink-soft);
+	}
+
+	.simple__body :global(h2) {
+		margin-top: var(--s-200);
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+		color: var(--ink);
+	}
+</style>

@@ -1,0 +1,29 @@
+---
+/**
+ * Icono de Phosphor (https://phosphoricons.com), estilo regular.
+ * Se incrusta como SVG en línea al generar la web, sin JavaScript.
+ */
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+interface Props {
+	name: string;
+	size?: number;
+	class?: string;
+	label?: string;
+}
+
+const { name, size = 24, class: className, label } = Astro.props;
+const file = join(process.cwd(), 'node_modules/@phosphor-icons/core/assets/regular', `${name}.svg`);
+if (!existsSync(file)) {
+	throw new Error(`El icono "${name}" no existe en Phosphor. Revisa el nombre en https://phosphoricons.com`);
+}
+const raw = readFileSync(file, 'utf-8');
+const a11y = label ? `role="img" aria-label="${label}"` : 'aria-hidden="true" focusable="false"';
+const svg = raw.replace(
+	'<svg ',
+	`<svg width="${size}" height="${size}" class="icon ${className ?? ''}" ${a11y} `,
+);
+---
+
+<Fragment set:html={svg} />

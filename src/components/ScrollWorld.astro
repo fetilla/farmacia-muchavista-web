@@ -1,0 +1,87 @@
+---
+/**
+ * Contenedor del recorrido: el vídeo queda fijo (sticky) detrás de las secciones
+ * y el scroll mueve su tiempo. Al terminar el contenedor, el vídeo se va con él.
+ */
+---
+
+<div class="world" data-world>
+	<div class="world__stage" aria-hidden="true">
+		<img
+			class="world__poster"
+			src="/video/farmacia-walkthrough-poster.webp"
+			alt=""
+			width="1920"
+			height="1080"
+			fetchpriority="high"
+			decoding="async"
+		/>
+		<video
+			class="world__video"
+			data-world-video
+			data-src-desktop="/video/farmacia-walkthrough-1080.mp4"
+			data-src-mobile="/video/farmacia-walkthrough-mobile.mp4"
+			muted
+			playsinline
+			preload="none"
+			disablepictureinpicture
+			tabindex="-1"></video>
+		<div class="world__veil"></div>
+	</div>
+	<div class="world__chapters">
+		<slot />
+	</div>
+</div>
+
+<style>
+	.world {
+		position: relative;
+	}
+
+	.world__stage {
+		position: sticky;
+		top: 0;
+		height: 100vh;
+		height: 100lvh;
+		margin-bottom: -100vh;
+		margin-bottom: -100lvh;
+		overflow: hidden;
+		background: var(--ink);
+		z-index: 0;
+	}
+
+	.world__poster,
+	.world__video {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.world__video {
+		opacity: 0;
+		transition: opacity 0.6s var(--ease);
+	}
+
+	:global(.world.has-video) .world__video {
+		opacity: 1;
+	}
+
+	.world__veil {
+		position: absolute;
+		inset: 0;
+		background: var(--veil);
+	}
+
+	.world__chapters {
+		position: relative;
+		z-index: 1;
+	}
+</style>
+
+<script>
+	import { mountScrollWorld } from '../scripts/scroll-world';
+	const root = document.querySelector<HTMLElement>('[data-world]');
+	if (root) mountScrollWorld(root);
+</script>

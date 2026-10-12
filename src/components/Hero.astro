@@ -1,0 +1,225 @@
+---
+import Horario from './Horario.astro';
+import Icon from './Icon.astro';
+import { getContacto, getSecciones, whatsappUrl } from '../lib/config';
+
+const contacto = await getContacto();
+const { inicio } = await getSecciones();
+const showBadge = import.meta.env.DEV && inicio.provisional;
+---
+
+<section
+	id="inicio"
+	class="hero"
+	data-chapter
+	data-video-start={inicio.video?.desde}
+	data-video-end={inicio.video?.hasta}
+	aria-labelledby="inicio-titulo"
+>
+	{inicio.provisional && <Fragment set:html="<!-- TODO: texto provisional en src/config/secciones.yaml (inicio) -->" />}
+	<div class="container hero__top">
+		{showBadge && <span class="provisional-badge">Texto provisional</span>}
+		{inicio.antetitulo && <p class="hero__eyebrow">{inicio.antetitulo}</p>}
+		<h1 id="inicio-titulo" class="hero__title">{inicio.titulo}</h1>
+		{inicio.subtitulo && <p class="hero__sub">{inicio.subtitulo}</p>}
+		<div class="hero__actions">
+			<a class="btn btn--primary" href={`tel:${contacto.telefono.numero}`}>
+				<Icon name="phone" size={20} />
+				Llámanos al {contacto.telefono.visible}
+			</a>
+			<a class="btn btn--whatsapp" href={whatsappUrl(contacto)} target="_blank" rel="noopener">
+				<Icon name="whatsapp-logo" size={20} />
+				Escríbenos por WhatsApp
+			</a>
+		</div>
+		<p class="hero__scroll" aria-hidden="true">
+			<span>Desliza para entrar en la farmacia</span>
+			<Icon name="arrow-down" size={18} />
+		</p>
+	</div>
+
+	<div class="container hero__info">
+		<div class="info-card reveal">
+			<h2 class="info-card__title">Horario</h2>
+			<Horario />
+		</div>
+		<div class="info-card reveal">
+			<h2 class="info-card__title">Localización</h2>
+			<address class="hero__address">
+				<Icon name="map-pin" size={24} />
+				<span>
+					{contacto.direccion.calle}<br />
+					{contacto.direccion.zona}<br />
+					{contacto.direccion.cp}, {contacto.direccion.provincia}
+				</span>
+			</address>
+			<a class="btn btn--light" href={contacto.maps_url} target="_blank" rel="noopener">
+				<Icon name="navigation-arrow" size={20} />
+				Cómo llegar
+			</a>
+		</div>
+	</div>
+</section>
+
+<style>
+	.hero {
+		position: relative;
+		min-height: 210vh;
+		padding-bottom: var(--s-900);
+	}
+
+	.hero__top {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: flex-start;
+		gap: var(--s-300);
+		min-height: 100svh;
+		padding-top: calc(var(--header-h) + var(--s-400));
+		padding-bottom: var(--s-700);
+		color: #fff;
+	}
+
+	.hero__eyebrow {
+		padding: var(--s-50) var(--s-100);
+		border-radius: 9999px;
+		background: rgb(14 58 91 / 0.45);
+		box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.4);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		font-weight: 600;
+	}
+
+	.hero__title {
+		max-width: 680px;
+		font-size: 2.25rem;
+		line-height: 2.5rem;
+		letter-spacing: -0.02em;
+		background: linear-gradient(90deg, #ffffff, #d9e7ee);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		text-shadow: none;
+		filter: drop-shadow(0 2px 16px rgb(14 58 91 / 0.45));
+	}
+
+	@media (min-width: 768px) {
+		.hero__title {
+			font-size: 3.75rem;
+			line-height: 1;
+		}
+	}
+
+	.hero__sub {
+		max-width: 680px;
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+		color: #fff;
+		text-shadow:
+			0 1px 2px rgb(14 58 91 / 0.7),
+			0 2px 16px rgb(14 58 91 / 0.6);
+	}
+
+	@media (min-width: 768px) {
+		.hero__sub {
+			font-size: 1.25rem;
+			line-height: 1.75rem;
+		}
+	}
+
+	.hero__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--s-100);
+	}
+
+	@media (max-width: 479px) {
+		.hero__actions .btn {
+			width: 100%;
+		}
+	}
+
+	.hero__scroll {
+		position: absolute;
+		left: 50%;
+		bottom: var(--s-400);
+		display: flex;
+		align-items: center;
+		gap: var(--s-75);
+		transform: translateX(-50%);
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		font-weight: 600;
+		color: rgb(255 255 255 / 0.85);
+		white-space: nowrap;
+		animation: bob 2.4s var(--ease) infinite;
+	}
+
+	@keyframes bob {
+		50% {
+			transform: translate(-50%, 6px);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hero__scroll {
+			animation: none;
+		}
+	}
+
+	.hero__info {
+		display: grid;
+		gap: var(--s-300);
+		margin-top: 40vh;
+	}
+
+	@media (min-width: 960px) {
+		.hero__info {
+			grid-template-columns: 1.6fr 1fr;
+			align-items: start;
+		}
+	}
+
+	.info-card {
+		display: grid;
+		gap: var(--s-200);
+		padding: var(--s-400);
+		border-radius: 24px;
+		background: var(--card);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		box-shadow: 0 24px 64px rgb(14 58 91 / 0.2);
+	}
+
+	@media (max-width: 767px) {
+		.info-card {
+			padding: var(--s-300);
+		}
+	}
+
+	.info-card__title {
+		font-size: 1.5rem;
+		line-height: 2rem;
+	}
+
+	.hero__address {
+		display: flex;
+		gap: var(--s-100);
+		font-style: normal;
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+	}
+
+	.hero__address :global(.icon) {
+		flex: none;
+		color: var(--sea);
+		margin-top: 2px;
+	}
+
+	.hero .info-card .btn {
+		justify-self: start;
+	}
+</style>

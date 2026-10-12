@@ -1,0 +1,260 @@
+---
+/**
+ * Horario por temporadas desde src/config/horario.yaml.
+ * Sin JavaScript se ven todas las temporadas; con JavaScript se resalta la vigente
+ * y se muestra "Abierta ahora" / "Cerrada ahora". Para probar otra fecha:
+ * añade ?fecha=2026-07-15T10:30 a la URL.
+ */
+import Icon from './Icon.astro';
+import { getHorario } from '../lib/config';
+
+interface Props {
+	compact?: boolean;
+	tone?: 'light' | 'dark';
+}
+
+const { compact = false, tone = 'light' } = Astro.props;
+const horario = await getHorario();
+---
+
+<div class:list={['horario', { 'horario--compact': compact }, `horario--${tone}`]} data-horario>
+	<p class="horario__status" data-horario-status hidden></p>
+	<div class="horario__grid">
+		{
+			horario.temporadas.map((t) => (
+				<article
+					class="horario__season"
+					data-season
+					data-desde={t.vigencia.desde}
+					data-hasta={t.vigencia.hasta}
+					data-franjas={JSON.stringify(
+						t.franjas.map((f) => ({ d: f.dias_semana, a: f.abre, c: f.cierra, x: f.cerrado })),
+					)}
+				>
+					<h3 class="horario__name">
+						<Icon name="clock" size={20} />
+						<span>{t.nombre}</span>
+						<span class="horario__now" data-season-badge hidden>
+							Vigente
+						</span>
+					</h3>
+					<dl>
+						{t.franjas.map((f) => (
+							<div class:list={['horario__row', { 'is-closed': f.cerrado }]}>
+								<dt>{f.dias}</dt>
+								<dd>{f.horas}</dd>
+							</div>
+						))}
+					</dl>
+				</article>
+			))
+		}
+	</div>
+</div>
+
+<style>
+	.horario {
+		display: grid;
+		gap: var(--s-200);
+	}
+
+	.horario__grid {
+		display: grid;
+		gap: var(--s-200);
+	}
+
+	@media (min-width: 640px) {
+		.horario__grid {
+			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		}
+	}
+
+	.horario__season {
+		padding: var(--s-300);
+		border-radius: 16px;
+		background: rgb(14 58 91 / 0.04);
+		box-shadow: inset 0 0 0 1px var(--line);
+		transition:
+			background-color 0.7s var(--ease),
+			box-shadow 0.7s var(--ease);
+	}
+
+	.horario__season.is-current {
+		background: rgb(31 143 141 / 0.08);
+		box-shadow: inset 0 0 0 2px var(--sea);
+	}
+
+	.horario--compact .horario__season {
+		padding: var(--s-200);
+	}
+
+	.horario__name {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--s-75);
+		margin-bottom: var(--s-100);
+		font-size: 1rem;
+		line-height: 1.5rem;
+		font-weight: 700;
+	}
+
+	.horario__name :global(.icon) {
+		color: var(--sea);
+	}
+
+	.horario__now {
+		padding: 2px var(--s-75);
+		border-radius: 9999px;
+		background: var(--sea);
+		color: #fff;
+		font-size: 0.75rem;
+		line-height: 1rem;
+		font-weight: 700;
+	}
+
+	dl {
+		display: grid;
+		gap: var(--s-50);
+		margin: 0;
+	}
+
+	.horario__row {
+		display: flex;
+		justify-content: space-between;
+		gap: var(--s-200);
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	dt {
+		font-weight: 600;
+	}
+
+	dd {
+		margin: 0;
+		color: var(--ink-soft);
+		text-align: right;
+	}
+
+	.is-closed dd {
+		color: var(--ink-soft);
+		font-style: normal;
+	}
+
+	.horario__status {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-75);
+		width: max-content;
+		padding: var(--s-50) var(--s-100);
+		border-radius: 9999px;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		font-weight: 700;
+		background: rgb(14 58 91 / 0.06);
+	}
+
+	.horario__status::before {
+		content: '';
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: currentColor;
+	}
+
+	.horario__status.is-open {
+		color: #12715a;
+		background: rgb(37 211 102 / 0.14);
+	}
+
+	.horario__status.is-closed {
+		color: #9a3b26;
+		background: rgb(242 131 107 / 0.16);
+	}
+
+	.horario__status[hidden] {
+		display: none;
+	}
+
+	/* Versión sobre fondo oscuro (pie) */
+	.horario--dark .horario__season {
+		background: rgb(251 253 255 / 0.06);
+		box-shadow: inset 0 0 0 1px rgb(251 253 255 / 0.14);
+	}
+
+	.horario--dark .horario__season.is-current {
+		background: rgb(43 179 177 / 0.14);
+		box-shadow: inset 0 0 0 2px var(--sea-light);
+	}
+
+	.horario--dark dd {
+		color: rgb(251 253 255 / 0.78);
+	}
+
+	.horario--dark .horario__name :global(.icon) {
+		color: var(--sea-light);
+	}
+
+	.horario--dark .horario__status {
+		background: rgb(251 253 255 / 0.1);
+		color: var(--foam);
+	}
+
+	.horario--dark .horario__status.is-open {
+		color: #7ef0b0;
+	}
+
+	.horario--dark .horario__status.is-closed {
+		color: #ffb7a6;
+	}
+</style>
+
+<script>
+	type Franja = { d: number[]; a?: string; c?: string; x?: boolean };
+
+	function now(): Date {
+		const param = new URLSearchParams(location.search).get('fecha');
+		const d = param ? new Date(param) : new Date();
+		return isNaN(d.getTime()) ? new Date() : d;
+	}
+
+	const mmdd = (d: Date) => `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+	const inRange = (v: string, desde: string, hasta: string) =>
+		desde <= hasta ? v >= desde && v <= hasta : v >= desde || v <= hasta;
+	const minutes = (hhmm: string) => {
+		const [h, m] = hhmm.split(':').map(Number);
+		return h * 60 + m;
+	};
+
+	function update() {
+		const date = now();
+		const today = mmdd(date);
+		const weekday = date.getDay() === 0 ? 7 : date.getDay();
+		const mins = date.getHours() * 60 + date.getMinutes();
+
+		document.querySelectorAll<HTMLElement>('[data-horario]').forEach((block) => {
+			let open: boolean | null = null;
+			block.querySelectorAll<HTMLElement>('[data-season]').forEach((season) => {
+				const current = inRange(today, season.dataset.desde!, season.dataset.hasta!);
+				season.classList.toggle('is-current', current);
+				const badge = season.querySelector<HTMLElement>('[data-season-badge]');
+				if (badge) badge.hidden = !current;
+				if (!current) return;
+				const franjas: Franja[] = JSON.parse(season.dataset.franjas || '[]');
+				const f = franjas.find((fr) => fr.d.includes(weekday));
+				open = !!f && !f.x && !!f.a && !!f.c && mins >= minutes(f.a) && mins < minutes(f.c);
+			});
+			const status = block.querySelector<HTMLElement>('[data-horario-status]');
+			if (status && open !== null) {
+				status.hidden = false;
+				status.textContent = open ? 'Abierta ahora' : 'Cerrada ahora';
+				status.classList.toggle('is-open', open);
+				status.classList.toggle('is-closed', !open);
+			}
+		});
+	}
+
+	update();
+	setInterval(update, 60_000);
+</script>

@@ -1,46 +1,43 @@
-# Astro Starter Kit: Basics
+# Farmacia Muchavista · web
+
+Landing page de Farmacia Muchavista (Playa Muchavista, El Campello), hecha con [Astro](https://docs.astro.build).
+Al hacer scroll, un vídeo de fondo recorre la farmacia desde la entrada hasta el mostrador.
+
+## Puesta en marcha
 
 ```sh
-pnpm create astro@latest -- --template basics
+pnpm install
+astro dev --background   # servidor en http://localhost:4321 (astro dev status / logs / stop)
+pnpm check               # comprobación de tipos
+pnpm build               # genera la web estática en dist/
+pnpm preview             # sirve dist/ para revisarla
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Para probar en un móvil de la misma red: `pnpm astro dev --host` y abre en el móvil la dirección "Network" que aparece.
 
-## 🚀 Project Structure
+## Editar contenidos
 
-Inside of your Astro project, you'll see the following folders and files:
+**Todo lo editable está en [`src/config/`](src/config/README.md):** contacto, horario, marcas y textos de cada sección.
+No hace falta tocar componentes. Consulta [`src/config/README.md`](src/config/README.md).
+
+## Estructura
 
 ```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+public/video/          vídeo de fondo (1080p escritorio, 540p móvil con todos los fotogramas clave) y póster
+src/config/            YAML de configuración (contacto, horario, marcas, secciones)
+src/content.config.ts  carga y validación de los YAML
+src/assets/logo.svg    logo vectorial (trazado del PNG original)
+src/assets/marcas/     fotos de marcas (opcional)
+src/components/        cabecera, secciones, horario, marcas, contacto, pie…
+src/scripts/           motor de scroll del vídeo y animaciones de aparición
+src/pages/             inicio, páginas legales y 404
+plans/                 plan de la landing y prompts de generación de los clips
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## Vídeo
 
-## 🧞 Commands
+`public/video/` contiene la versión final (v4) del recorrido, ya comprimida para web. No se genera nada en el build.
+El motor (`src/scripts/scroll-world.ts`) asocia cada sección a un tramo del vídeo según `video: { desde, hasta }` en `src/config/secciones.yaml`.
+Con "reducir movimiento" activado en el sistema, se muestra el póster fijo.
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Cómo se generaron los clips: [`plans/landing-scroll-world.md`](plans/landing-scroll-world.md), sección 7.

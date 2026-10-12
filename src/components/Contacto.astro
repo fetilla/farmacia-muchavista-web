@@ -1,0 +1,218 @@
+---
+import Horario from './Horario.astro';
+import Icon from './Icon.astro';
+import { getContacto, getSecciones, whatsappUrl } from '../lib/config';
+
+const c = await getContacto();
+const { contacto: s } = await getSecciones();
+
+const canales = [
+	{ icon: 'whatsapp-logo', label: 'WhatsApp', value: c.whatsapp.visible, href: whatsappUrl(c), external: true },
+	{ icon: 'phone', label: 'Llamada', value: c.telefono.visible, href: `tel:${c.telefono.numero}` },
+	{ icon: 'instagram-logo', label: 'Instagram', value: c.instagram.usuario, href: c.instagram.url, external: true },
+	{ icon: 'envelope-simple', label: 'Correo', value: c.email, href: `mailto:${c.email}` },
+];
+---
+
+<section id="contacto" class="contacto" aria-labelledby="contacto-titulo">
+	<svg class="contacto__wave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+		<path d="M0 40c160 26 320 39 480 26S800 10 960 13s320 33 480 43v24H0z" fill="currentColor"></path>
+	</svg>
+	<div class="container contacto__inner">
+		<header class="contacto__head reveal">
+			{s.antetitulo && <p class="eyebrow">{s.antetitulo}</p>}
+			<h2 id="contacto-titulo" class="title">{s.titulo}</h2>
+			{s.subtitulo && <p class="lead">{s.subtitulo}</p>}
+		</header>
+
+		<ul class="canales" role="list">
+			{
+				canales.map((ch, i) => (
+					<li class="reveal" style={`transition-delay:${i * 80}ms`}>
+						<a
+							class="canal"
+							href={ch.href}
+							{...(ch.external ? { target: '_blank', rel: 'noopener' } : {})}
+						>
+							<span class="canal__icon">
+								<Icon name={ch.icon} size={24} />
+							</span>
+							<span class="canal__text">
+								<span class="canal__label">{ch.label}</span>
+								<span class="canal__value">{ch.value}</span>
+							</span>
+							<Icon name="arrow-right" size={20} class="canal__arrow" />
+						</a>
+					</li>
+				))
+			}
+		</ul>
+
+		<div class="contacto__grid">
+			<div class="contacto__box reveal">
+				<h3 class="contacto__box-title">Horario</h3>
+				<Horario compact />
+			</div>
+			<div class="contacto__box reveal">
+				<h3 class="contacto__box-title">Dónde estamos</h3>
+				<address>
+					{c.nombre}<br />
+					{c.direccion.calle}<br />
+					{c.direccion.zona}<br />
+					{c.direccion.cp}, {c.direccion.provincia}
+				</address>
+				<a class="btn btn--primary" href={c.maps_url} target="_blank" rel="noopener">
+					<Icon name="navigation-arrow" size={20} />
+					Cómo llegar
+				</a>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.contacto {
+		position: relative;
+		z-index: 2;
+		padding: var(--s-800) 0 var(--s-900);
+		background: var(--sand);
+	}
+
+	.contacto__wave {
+		position: absolute;
+		left: 0;
+		bottom: 100%;
+		width: 100%;
+		height: 48px;
+		color: var(--sand);
+	}
+
+	.contacto__inner {
+		display: grid;
+		gap: var(--s-600);
+	}
+
+	.contacto__head {
+		display: grid;
+		gap: var(--s-200);
+		max-width: 680px;
+	}
+
+	.canales {
+		display: grid;
+		gap: var(--s-200);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	@media (min-width: 640px) {
+		.canales {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	.canal {
+		display: flex;
+		align-items: center;
+		gap: var(--s-200);
+		height: 100%;
+		padding: var(--s-300);
+		border-radius: 24px;
+		background: var(--foam);
+		text-decoration: none;
+		box-shadow:
+			0 12px 32px rgb(14 58 91 / 0.08),
+			inset 0 0 0 1px var(--line);
+		transition:
+			transform 0.7s var(--ease),
+			box-shadow 0.7s var(--ease);
+	}
+
+	.canal:hover {
+		transform: translateY(-4px);
+		box-shadow:
+			0 20px 48px rgb(14 58 91 / 0.14),
+			inset 0 0 0 1px var(--line);
+	}
+
+	.canal:active {
+		transform: scale(0.98);
+	}
+
+	.canal__icon {
+		display: grid;
+		place-items: center;
+		flex: none;
+		width: 48px;
+		height: 48px;
+		border-radius: 16px;
+		background: rgb(31 143 141 / 0.12);
+		color: var(--sea);
+	}
+
+	.canal__text {
+		display: grid;
+		min-width: 0;
+	}
+
+	.canal__label {
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		font-weight: 600;
+		color: var(--ink-soft);
+	}
+
+	.canal__value {
+		font-weight: 700;
+		overflow-wrap: break-word;
+	}
+
+	.canal :global(.canal__arrow) {
+		margin-left: auto;
+		flex: none;
+		color: var(--ink-soft);
+	}
+
+	.contacto__grid {
+		display: grid;
+		gap: var(--s-300);
+	}
+
+	@media (min-width: 960px) {
+		.contacto__grid {
+			grid-template-columns: 1.6fr 1fr;
+		}
+	}
+
+	.contacto__box {
+		display: grid;
+		align-content: start;
+		gap: var(--s-200);
+		padding: var(--s-400);
+		border-radius: 24px;
+		background: var(--foam);
+		box-shadow: inset 0 0 0 1px var(--line);
+	}
+
+	@media (max-width: 767px) {
+		.contacto__box {
+			padding: var(--s-300);
+		}
+	}
+
+	.contacto__box-title {
+		font-size: 1.5rem;
+		line-height: 2rem;
+	}
+
+	address {
+		font-style: normal;
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+	}
+
+	.contacto__box .btn {
+		justify-self: start;
+	}
+</style>

@@ -1,0 +1,12 @@
+---
+import SimplePage from '../layouts/SimplePage.astro';
+import { getContacto } from '../lib/config';
+const c = await getContacto();
+---
+
+<SimplePage title="Política de privacidad" provisional noindex>
+	<h2>Datos que tratamos</h2>
+	<p>Esta web no tiene formularios ni crea cuentas de usuario. Si nos escribes por WhatsApp, correo o Instagram, usaremos tus datos solo para responder a tu consulta.</p>
+	<h2>Responsable</h2>
+	<p>{c.nombre}, {c.direccion.calle}, {c.direccion.zona}. Puedes ejercer tus derechos escribiendo a {c.email}.</p>
+</SimplePage>

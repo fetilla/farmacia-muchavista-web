@@ -1,0 +1,54 @@
+---
+import Icon from './Icon.astro';
+import { getContacto, whatsappUrl } from '../lib/config';
+
+const c = await getContacto();
+---
+
+<a class="fab" href={whatsappUrl(c)} target="_blank" rel="noopener" aria-label={`Escríbenos por WhatsApp al ${c.whatsapp.visible}`}>
+	<Icon name="whatsapp-logo" size={28} />
+	<span class="fab__label">WhatsApp</span>
+</a>
+
+<style>
+	.fab {
+		position: fixed;
+		right: max(var(--s-200), env(safe-area-inset-right));
+		bottom: max(var(--s-200), env(safe-area-inset-bottom));
+		z-index: 90;
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-75);
+		min-width: 56px;
+		height: 56px;
+		padding: 0 var(--s-200) 0 var(--s-100);
+		border-radius: 9999px;
+		background: var(--whatsapp);
+		color: var(--ink);
+		font-weight: 700;
+		text-decoration: none;
+		box-shadow: 0 12px 32px rgb(14 58 91 / 0.3);
+		transition:
+			transform 0.7s var(--ease),
+			box-shadow 0.7s var(--ease);
+	}
+
+	.fab:hover {
+		transform: translateY(-3px) scale(1.02);
+		box-shadow: 0 16px 40px rgb(14 58 91 / 0.36);
+	}
+
+	.fab:active {
+		transform: scale(0.98);
+	}
+
+	@media (max-width: 639px) {
+		.fab {
+			padding: 0;
+			justify-content: center;
+		}
+		.fab__label {
+			display: none;
+		}
+	}
+</style>

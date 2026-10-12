@@ -1,0 +1,31 @@
+# Datos de contacto y localización de la farmacia.
+# Se usan en la cabecera, el inicio, el botón de WhatsApp, el bloque "Contáctanos",
+# el pie y los datos para buscadores. Cambia aquí y se actualiza toda la web.
+
+nombre: "Farmacia Muchavista"
+titular: "Elena Pérez Belda"
+
+direccion:
+  calle: "C/ Juan de la Cierva, 40"
+  zona: "Playa Muchavista, El Campello"
+  cp: "03560"
+  localidad: "El Campello"
+  provincia: "Alicante"
+
+# Enlace del botón "Cómo llegar"
+maps_url: "https://www.google.com/maps/search/?api=1&query=Farmacia+Muchavista+C%2F+Juan+de+la+Cierva+40+El+Campello"
+
+whatsapp:
+  visible: "680 14 36 23"        # cómo se muestra en la web
+  numero: "34680143623"          # con prefijo de país, sin espacios ni "+"
+  mensaje: "Hola, quería hacer una consulta a Farmacia Muchavista"
+
+telefono:
+  visible: "965 65 15 54"
+  numero: "+34965651554"         # con "+34" delante, sin espacios
+
+instagram:
+  usuario: "@farmaciamuchavista"
+  url: "https://instagram.com/farmaciamuchavista"
+
+email: "farmaciamuchavista@gmail.com"

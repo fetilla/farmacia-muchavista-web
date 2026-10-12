@@ -1,0 +1,154 @@
+---
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+import { getContacto, whatsappUrl } from '../lib/config';
+
+const c = await getContacto();
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+	<div class="container footer__inner">
+		<div class="footer__brand">
+			<a href="/#inicio" class="footer__logo" aria-label={`${c.nombre}, volver al inicio`}>
+				<Logo id="logo-footer" />
+			</a>
+			<address>
+				{c.direccion.calle}<br />
+				{c.direccion.zona}<br />
+				{c.direccion.cp}, {c.direccion.provincia}
+			</address>
+		</div>
+
+		<ul class="footer__contact" role="list">
+			<li>
+				<a href={whatsappUrl(c)} target="_blank" rel="noopener"><Icon name="whatsapp-logo" size={20} />{c.whatsapp.visible}</a>
+			</li>
+			<li>
+				<a href={`tel:${c.telefono.numero}`}><Icon name="phone" size={20} />{c.telefono.visible}</a>
+			</li>
+			<li>
+				<a href={c.instagram.url} target="_blank" rel="noopener"><Icon name="instagram-logo" size={20} />{c.instagram.usuario}</a>
+			</li>
+			<li>
+				<a href={`mailto:${c.email}`}><Icon name="envelope-simple" size={20} />{c.email}</a>
+			</li>
+		</ul>
+	</div>
+
+	<div class="container footer__bottom">
+		<p>© {year} {c.nombre}{c.titular && ` · ${c.titular}`}</p>
+		<nav aria-label="Legal">
+			<ul role="list">
+				<li><a href="/aviso-legal">Aviso legal</a></li>
+				<li><a href="/privacidad">Privacidad</a></li>
+				<li><a href="/cookies">Cookies</a></li>
+			</ul>
+		</nav>
+	</div>
+</footer>
+
+<style>
+	.footer {
+		position: relative;
+		z-index: 2;
+		padding: var(--s-700) 0 calc(var(--s-700) + env(safe-area-inset-bottom));
+		background: var(--ink);
+		color: var(--foam);
+		--logo-accent: #a9c6d2;
+		--logo-ink: #fbfdff;
+	}
+
+	.footer__inner {
+		display: grid;
+		gap: var(--s-500);
+	}
+
+	@media (min-width: 768px) {
+		.footer__inner {
+			grid-template-columns: 1fr 1fr;
+			align-items: start;
+		}
+	}
+
+	.footer__brand {
+		display: grid;
+		gap: var(--s-300);
+	}
+
+	.footer__logo {
+		justify-self: start;
+	}
+
+	.footer__logo :global(.logo) {
+		width: 200px;
+		height: auto;
+	}
+
+	address {
+		font-style: normal;
+		color: rgb(251 253 255 / 0.8);
+	}
+
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.footer__contact {
+		display: grid;
+		gap: var(--s-100);
+	}
+
+	.footer__contact a {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-100);
+		min-height: 44px;
+		text-decoration: none;
+		font-weight: 600;
+		overflow-wrap: anywhere;
+		transition: color 0.7s var(--ease);
+	}
+
+	.footer__contact a:hover {
+		color: var(--sea-light);
+	}
+
+	.footer__contact :global(.icon) {
+		flex: none;
+		color: var(--sea-light);
+	}
+
+	.footer__bottom {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: var(--s-200);
+		margin-top: var(--s-600);
+		padding-top: var(--s-300);
+		border-top: 1px solid rgb(251 253 255 / 0.14);
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		color: rgb(251 253 255 / 0.72);
+	}
+
+	.footer__bottom ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--s-200);
+	}
+
+	.footer__bottom a {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		text-decoration: none;
+	}
+
+	.footer__bottom a:hover {
+		color: var(--foam);
+		text-decoration: underline;
+	}
+</style>

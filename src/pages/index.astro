@@ -1,11 +1,54 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import ScrollWorld from '../components/ScrollWorld.astro';
+import Hero from '../components/Hero.astro';
+import Chapter from '../components/Chapter.astro';
+import Cards from '../components/Cards.astro';
+import Marcas from '../components/Marcas.astro';
+import TaglineReveal from '../components/TaglineReveal.astro';
+import Contacto from '../components/Contacto.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFab from '../components/WhatsAppFab.astro';
+import { getSecciones } from '../lib/config';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const s = await getSecciones();
 ---
 
 <Layout>
-	<Welcome />
+	<Header />
+	<main id="contenido">
+		<ScrollWorld>
+			<Hero />
+
+			<Chapter id="nosotros" seccion={s.nosotros}>
+				{s.nosotros.frase_destacada && <TaglineReveal text={s.nosotros.frase_destacada} />}
+			</Chapter>
+
+			<Chapter id="servicios" seccion={s.servicios} align="right">
+				{s.servicios.tarjetas && <Cards tarjetas={s.servicios.tarjetas} variant="service" />}
+			</Chapter>
+
+			<Chapter id="marcas" seccion={s.marcas}>
+				<Marcas />
+			</Chapter>
+
+			<Chapter id="promociones" seccion={s.promociones} align="right">
+				{s.promociones.tarjetas && <Cards tarjetas={s.promociones.tarjetas} variant="promo" />}
+			</Chapter>
+
+			<Chapter id="actualidad" seccion={s.actualidad}>
+				{s.actualidad.tarjetas && <Cards tarjetas={s.actualidad.tarjetas} variant="news" />}
+			</Chapter>
+		</ScrollWorld>
+
+		<Contacto />
+	</main>
+	<Footer />
+	<WhatsAppFab />
 </Layout>
+
+<script>
+	import { initReveal } from '../scripts/reveal';
+	initReveal();
+</script>

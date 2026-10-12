@@ -1,23 +1,53 @@
+---
+import '../styles/global.css';
+import { getContacto, getHorario, pharmacyJsonLd } from '../lib/config';
+
+interface Props {
+	title?: string;
+	description?: string;
+	noindex?: boolean;
+}
+
+const contacto = await getContacto();
+const horario = await getHorario();
+
+const {
+	title = `${contacto.nombre} · Farmacia en Playa Muchavista, El Campello`,
+	description = `${contacto.nombre} en ${contacto.direccion.zona}. Consejo farmacéutico, dermocosmética, control de tensión y cuidado infantil junto a la playa.`,
+	noindex = false,
+} = Astro.props;
+
+const ogImage = '/video/farmacia-walkthrough-poster.jpg';
+const ogUrl = Astro.site ? new URL(ogImage, Astro.site).href : ogImage;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const jsonLd = pharmacyJsonLd(contacto, horario, Astro.site, ogImage);
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="es">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		{noindex && <meta name="robots" content="noindex" />}
+		{canonical && <link rel="canonical" href={canonical} />}
+		<meta name="theme-color" content="#0e3a5b" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+
+		<meta property="og:type" content="website" />
+		<meta property="og:locale" content="es_ES" />
+		<meta property="og:site_name" content={contacto.nombre} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogUrl} />
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+		<slot name="head" />
 	</head>
 	<body>
+		<a class="skip-link" href="#contenido">Saltar al contenido</a>
 		<slot />
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

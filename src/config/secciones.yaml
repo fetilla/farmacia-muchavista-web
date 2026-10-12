@@ -1,0 +1,117 @@
+# Textos de cada sección de la página.
+#
+# Campos disponibles en cada sección (todos opcionales salvo "titulo"):
+#   menu:         texto del enlace en el menú
+#   antetitulo:   línea pequeña encima del título
+#   titulo:       título principal de la sección
+#   subtitulo:    frase de apoyo bajo el título
+#   parrafos:     lista de párrafos
+#   tarjetas:     lista de tarjetas { titulo, texto, icono, etiqueta, fecha }
+#                 icono: nombre de un icono de Phosphor (https://phosphoricons.com), p. ej. "heartbeat"
+#   video:        tramo del vídeo de fondo en segundos { desde, hasta }
+#   provisional:  true mientras el texto sea de ejemplo (se marca en desarrollo)
+#
+# El orden de este fichero es el orden del menú y del recorrido.
+
+inicio:
+  menu: "Inicio"
+  antetitulo: "Farmacia en Playa Muchavista, El Campello"
+  titulo: "Tu farmacia de confianza, a un paseo del mar"
+  subtitulo: "Consejo farmacéutico cercano, dermocosmética y cuidado para toda la familia, todos los días del año junto a la playa."
+  video: { desde: 0, hasta: 5.04 }
+  provisional: true
+
+nosotros:
+  menu: "Nosotros"
+  antetitulo: "Nosotros"
+  titulo: "Un equipo que te conoce por tu nombre"
+  parrafos:
+    - "Desde nuestro mostrador en Muchavista acompañamos a vecinos y veraneantes con la misma calma: escuchando primero y recomendando después."
+    - "Elena Pérez Belda y su equipo combinan formación sanitaria continua con algo que no se aprende en los libros: el trato de una farmacia de barrio."
+  frase_destacada: "Cuidamos de tu salud con la cercanía de siempre y el rigor de un equipo sanitario."
+  video: { desde: 5.04, hasta: 10.08 }
+  provisional: true
+
+servicios:
+  menu: "Servicios"
+  antetitulo: "Servicios"
+  titulo: "Todo lo que necesitas, en un solo sitio"
+  subtitulo: "Te ayudamos a resolver dudas de salud del día a día sin esperas ni citas complicadas."
+  tarjetas:
+    - titulo: "Consejo farmacéutico"
+      texto: "Resolvemos tus dudas sobre medicación, interacciones y pequeñas dolencias con tiempo para escucharte."
+      icono: "chat-circle-text"
+    - titulo: "Dermocosmética"
+      texto: "Analizamos tu piel y te recomendamos una rutina adaptada, también para después del sol."
+      icono: "sparkle"
+    - titulo: "Control de tensión"
+      texto: "Medimos tu tensión arterial en nuestra cabina y te explicamos los resultados al momento."
+      icono: "heartbeat"
+    - titulo: "Nutrición y bienestar"
+      texto: "Te orientamos con complementos y hábitos para el descanso, la digestión y las defensas."
+      icono: "leaf"
+    - titulo: "Zona infantil"
+      texto: "Alimentación, higiene y cuidado del bebé con asesoramiento para madres y padres primerizos."
+      icono: "baby"
+    - titulo: "Botiquín de playa"
+      texto: "Picaduras, quemaduras solares o pequeñas heridas: te preparamos lo necesario para tus vacaciones."
+      icono: "first-aid-kit"
+  video: { desde: 10.08, hasta: 15.13 }
+  provisional: true
+
+marcas:
+  menu: "Marcas"
+  antetitulo: "Marcas"
+  titulo: "Marcas en las que confiamos"
+  subtitulo: "Seleccionamos cada línea de producto por su eficacia y te ayudamos a elegir la que mejor encaja contigo."
+  video: { desde: 15.13, hasta: 20.17 }
+  provisional: true
+
+promociones:
+  menu: "Promociones"
+  antetitulo: "Promociones"
+  titulo: "Ofertas de temporada"
+  subtitulo: "Cada mes renovamos nuestro expositor con descuentos en solares, dermocosmética y cuidado infantil."
+  tarjetas:
+    - titulo: "Protección solar"
+      texto: "Segunda unidad al 40 % en una selección de fotoprotectores faciales y corporales."
+      etiqueta: "Hasta el 31 de agosto"
+      icono: "tag"
+    - titulo: "Rutina facial"
+      texto: "Llévate un neceser de regalo con la compra de dos productos de tratamiento facial."
+      etiqueta: "Unidades limitadas"
+      icono: "sparkle"
+    - titulo: "Cuidado del bebé"
+      texto: "Un 15 % de descuento en higiene infantil para los más pequeños de la casa."
+      etiqueta: "Este mes"
+      icono: "baby"
+  video: { desde: 20.17, hasta: 30.25 }
+  provisional: true
+
+actualidad:
+  menu: "Actualidad"
+  antetitulo: "Actualidad"
+  titulo: "Novedades y consejos de salud"
+  subtitulo: "Lo que está pasando en la farmacia y recomendaciones para cada época del año."
+  tarjetas:
+    - titulo: "Cómo elegir tu protector solar este verano"
+      texto: "Factor, textura y resistencia al agua: te explicamos qué mirar en la etiqueta antes de ir a la playa."
+      fecha: "2026-06-18"
+      icono: "newspaper-clipping"
+    - titulo: "Nueva cabina de medición de tensión"
+      texto: "Ya puedes controlar tu tensión arterial en la farmacia de forma gratuita, sin cita previa."
+      fecha: "2026-05-07"
+      icono: "heartbeat"
+    - titulo: "Picaduras de medusa: qué hacer y qué evitar"
+      texto: "Primeros auxilios sencillos para un susto frecuente en nuestras playas durante el verano."
+      fecha: "2026-07-23"
+      icono: "first-aid-kit"
+  video: { desde: 30.25, hasta: 35.29 }
+  provisional: true
+
+contacto:
+  menu: "Contacto"
+  antetitulo: "Contáctanos"
+  titulo: "Estamos aquí para ayudarte"
+  subtitulo: "Escríbenos por WhatsApp, llámanos o pásate por la farmacia. Te atendemos encantados."
+  provisional: false

@@ -1,0 +1,14 @@
+---
+import SimplePage from '../layouts/SimplePage.astro';
+import Icon from '../components/Icon.astro';
+import { getContacto, whatsappUrl } from '../lib/config';
+const c = await getContacto();
+---
+
+<SimplePage title="No encontramos esta página" noindex>
+	<p>Puede que el enlace haya cambiado o que la dirección tenga una errata. Vuelve al inicio o escríbenos y te ayudamos.</p>
+	<p style="display:flex;flex-wrap:wrap;gap:12px">
+		<a class="btn btn--primary" href="/"><Icon name="house" size={20} />Ir al inicio</a>
+		<a class="btn btn--whatsapp" href={whatsappUrl(c)} target="_blank" rel="noopener"><Icon name="whatsapp-logo" size={20} />Escríbenos por WhatsApp</a>
+	</p>
+</SimplePage>

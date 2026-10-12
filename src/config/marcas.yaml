@@ -1,0 +1,51 @@
+# Marcas que se muestran en la sección "Marcas".
+#
+# Para añadir una marca, copia un bloque y cambia los datos:
+#   nombre:       nombre de la marca (obligatorio)
+#   categoria:    categoría para agrupar y filtrar (obligatorio)
+#   foto:         nombre del archivo dentro de src/assets/marcas/ (opcional).
+#                 Si no hay foto, se muestra un distintivo con las iniciales.
+#   descripcion:  texto breve (obligatorio)
+#   provisional:  true mientras el texto sea de ejemplo
+#
+# El orden de la lista es el orden en la web.
+
+- nombre: "Eucerin"
+  categoria: "Dermocosmética"
+  descripcion: "Cuidado dermatológico para pieles secas, sensibles o con tendencia atópica, con texturas pensadas para el día a día."
+  provisional: true
+
+- nombre: "La Roche-Posay"
+  categoria: "Dermocosmética"
+  descripcion: "Fórmulas recomendadas por dermatólogos para pieles sensibles, con una gama solar muy completa para la playa."
+  provisional: true
+
+- nombre: "Lierac"
+  categoria: "Dermocosmética"
+  descripcion: "Tratamientos faciales y corporales de inspiración francesa: antiedad, firmeza y luminosidad."
+  provisional: true
+
+- nombre: "ISDIN"
+  categoria: "Protección solar"
+  descripcion: "Fotoprotección de textura ligera para toda la familia, también en formato spray y para pieles atópicas."
+  provisional: true
+
+- nombre: "Mustela"
+  categoria: "Bebé y maternidad"
+  descripcion: "Higiene y cuidado de la piel del bebé desde el primer día, y productos para el embarazo y la lactancia."
+  provisional: true
+
+- nombre: "Avène"
+  categoria: "Dermocosmética"
+  descripcion: "Agua termal y cuidados calmantes para pieles reactivas que necesitan algo de alivio después del sol."
+  provisional: true
+
+- nombre: "Arkopharma"
+  categoria: "Nutrición y bienestar"
+  descripcion: "Complementos a base de plantas para el descanso, la digestión y las defensas, con nuestro consejo personalizado."
+  provisional: true
+
+- nombre: "Cinfa"
+  categoria: "Salud y botiquín"
+  descripcion: "Productos de botiquín, cuidado bucal y salud cotidiana para tener siempre a mano en casa o de vacaciones."
+  provisional: true

@@ -1,0 +1,19 @@
+---
+/**
+ * Logo vectorial (src/assets/logo.svg, trazado desde el PNG original con potrace).
+ * Colores ajustables con las variables CSS --logo-accent y --logo-ink.
+ */
+import raw from '../assets/logo.svg?raw';
+
+interface Props {
+	class?: string;
+	id?: string;
+}
+
+const { class: className, id = 'logo' } = Astro.props;
+const svg = raw
+	.replace('id="logo-title"', `id="${id}-title"`)
+	.replace('aria-labelledby="logo-title"', `aria-labelledby="${id}-title" class="logo ${className ?? ''}"`);
+---
+
+<Fragment set:html={svg} />
