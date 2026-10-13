@@ -16,48 +16,64 @@ const { inicio } = await getSecciones();
 	aria-labelledby="inicio-titulo"
 >
 	{inicio.provisional && <Fragment set:html="<!-- TODO: texto provisional en src/config/secciones.yaml (inicio) -->" />}
-	<div class="container hero__top">
-		{inicio.antetitulo && <p class="hero__eyebrow">{inicio.antetitulo}</p>}
-		<h1 id="inicio-titulo" class="hero__title">{inicio.titulo}</h1>
-		{inicio.subtitulo && <p class="hero__sub">{inicio.subtitulo}</p>}
-		<div class="hero__actions">
-			<a class="btn btn--primary" href={`tel:${contacto.telefono.numero}`}>
-				<Icon name="phone" size={20} />
-				Llámanos al {contacto.telefono.visible}
-			</a>
-			<a class="btn btn--whatsapp" href={whatsappUrl(contacto)} target="_blank" rel="noopener">
-				<Icon name="whatsapp-logo" size={20} />
-				Escríbenos por WhatsApp
-			</a>
+	<div class="container hero__inner">
+		<div class="hero__top">
+			{inicio.antetitulo && <p class="hero__eyebrow">{inicio.antetitulo}</p>}
+			<h1 id="inicio-titulo" class="hero__title">{inicio.titulo}</h1>
+			{inicio.subtitulo && <p class="hero__sub">{inicio.subtitulo}</p>}
+			<div class="hero__actions">
+				<a class="btn btn--primary" href={`tel:${contacto.telefono.numero}`}>
+					<Icon name="phone" size={20} />
+					Llámanos al {contacto.telefono.visible}
+				</a>
+				<a class="btn btn--whatsapp" href={whatsappUrl(contacto)} target="_blank" rel="noopener">
+					<Icon name="whatsapp-logo" size={20} />
+					Escríbenos por WhatsApp
+				</a>
+			</div>
 		</div>
-		<p class="hero__scroll" aria-hidden="true">
-			<span>Desliza para entrar en la farmacia</span>
-			<Icon name="arrow-down" size={18} />
-		</p>
+
+		<div class="hero__info">
+			<HorarioLocalizacion compact />
+		</div>
 	</div>
 
-	<div class="container hero__info">
-		<HorarioLocalizacion />
-	</div>
+	<p class="hero__scroll" aria-hidden="true">
+		<span>Desliza para entrar en la farmacia</span>
+		<Icon name="arrow-down" size={18} />
+	</p>
 </section>
 
 <style>
+	/* Inicio ocupa una sola pantalla (horario incluido): todo él es la escena de la
+	   fachada y el vídeo no se mueve hasta que se entra en Nosotros */
 	.hero {
 		position: relative;
-		min-height: 210vh;
-		padding-bottom: var(--s-900);
+		display: flex;
+		align-items: center;
+		min-height: 100vh;
+		min-height: 100svh;
+		padding: calc(var(--header-h) + var(--s-400)) 0 var(--s-800);
+	}
+
+	.hero__inner {
+		display: grid;
+		gap: var(--s-400);
+		align-items: center;
+	}
+
+	@media (min-width: 1024px) {
+		.hero__inner {
+			grid-template-columns: minmax(0, 1fr) 380px;
+			gap: var(--s-600);
+		}
 	}
 
 	.hero__top {
-		position: relative;
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
 		align-items: flex-start;
 		gap: var(--s-300);
-		min-height: 100svh;
-		padding-top: calc(var(--header-h) + var(--s-400));
-		padding-bottom: var(--s-700);
 		color: #fff;
 	}
 
@@ -150,18 +166,25 @@ const { inicio } = await getSecciones();
 		}
 	}
 
-	.hero__info {
-		margin-top: 40vh;
+	/* Pantallas bajas o estrechas: el horario queda debajo y el aviso de deslizar sobra */
+	@media (max-width: 1023px), (max-height: 700px) {
+		.hero__scroll {
+			display: none;
+		}
 	}
 
-	/* Móvil: menos recorrido entre secciones (el vídeo avanza más deprisa por cada scroll) */
-	@media (max-width: 639px) {
+	@media (max-width: 1023px) {
 		.hero {
+			display: block;
 			min-height: 0;
 			padding-bottom: var(--s-600);
 		}
+		.hero__top {
+			min-height: calc(100svh - var(--header-h) - var(--s-400) - var(--s-600));
+			justify-content: center;
+		}
 		.hero__info {
-			margin-top: 15vh;
+			max-width: 560px;
 		}
 	}
 

@@ -44,10 +44,20 @@ const Heading = headingLevel;
 
 <style>
 	/* Sin alto mínimo: cada sección mide su contenido y el hueco entre secciones es siempre el
-	   mismo (relleno superior + inferior). El vídeo avanza en proporción a ese alto. */
+	   mismo (relleno superior + inferior). El relleno superior deja ver la escena del vídeo
+	   al llegar a la sección (el scroll se ajusta a su borde superior). */
 	.chapter {
 		position: relative;
-		padding: 30vh 0 var(--s-900);
+		padding: 22vh 0 var(--s-800);
+	}
+
+	/* Escritorio paso a paso: cada sección ocupa al menos una pantalla, con el contenido
+	   centrado bajo la cabecera (las más altas se recorren con scroll normal) */
+	:global(html.is-paged) .chapter {
+		display: flex;
+		align-items: center;
+		min-height: 100vh;
+		padding: var(--header-h) 0 var(--s-200);
 	}
 
 	.chapter__inner {
@@ -74,10 +84,10 @@ const Heading = headingLevel;
 		}
 	}
 
-	/* Móvil: menos recorrido entre secciones (el vídeo avanza más deprisa por cada scroll) */
+	/* Móvil: menos recorrido entre secciones */
 	@media (max-width: 639px) {
 		.chapter {
-			padding: 20vh 0 var(--s-600);
+			padding: 14vh 0 var(--s-600);
 		}
 		.chapter__inner {
 			gap: var(--s-300);

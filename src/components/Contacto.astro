@@ -62,7 +62,16 @@ const canales = [
 		/* Última sección: margen extra al final para ver el último tramo del vídeo
 		   (hacia el mostrador) a pantalla completa antes de que aparezca el pie */
 		min-height: 220vh;
-		padding: 30vh 0 90vh;
+		padding: 22vh 0 90vh;
+	}
+
+	/* Escritorio paso a paso: una pantalla como las demás; el último tramo del vídeo
+	   se ve en el paso siguiente, el del pie */
+	:global(html.is-paged) .contacto {
+		display: flex;
+		align-items: center;
+		min-height: 100vh;
+		padding: var(--header-h) 0 var(--s-200);
 	}
 
 	.contacto__inner {
@@ -92,7 +101,7 @@ const canales = [
 	@media (max-width: 639px) {
 		.contacto {
 			min-height: 130vh;
-			padding: 20vh 0 45vh;
+			padding: 14vh 0 45vh;
 		}
 		.contacto__inner {
 			gap: var(--s-200);

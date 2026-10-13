@@ -1,7 +1,8 @@
 ---
 /**
  * Recuadro único con el horario (src/config/horario.yaml) y la localización
- * (src/config/contacto.yaml). Se usa en Inicio y en Contáctanos.
+ * (src/config/contacto.yaml). Se usa en Inicio (compacto: una columna, solo la
+ * temporada vigente) y en Contáctanos (completo).
  */
 import Horario from './Horario.astro';
 import Icon from './Icon.astro';
@@ -9,17 +10,18 @@ import { getContacto } from '../lib/config';
 
 interface Props {
 	headingLevel?: 'h2' | 'h3';
+	compact?: boolean;
 }
 
-const { headingLevel = 'h2' } = Astro.props;
+const { headingLevel = 'h2', compact = false } = Astro.props;
 const H = headingLevel;
 const contacto = await getContacto();
 ---
 
-<div class="info-card reveal">
+<div class:list={['info-card', { 'info-card--compact': compact }, 'reveal']}>
 	<div class="info-card__part">
 		<H class="info-card__title">Horario</H>
-		<Horario />
+		<Horario compact={compact} collapse={compact ? 'always' : 'mobile'} />
 	</div>
 	<div class="info-card__part info-card__part--location">
 		<H class="info-card__title">Localización</H>
@@ -31,7 +33,7 @@ const contacto = await getContacto();
 				{contacto.direccion.cp}, {contacto.direccion.provincia}
 			</span>
 		</address>
-		<a class="btn btn--light" href={contacto.maps_url} target="_blank" rel="noopener">
+		<a class:list={['btn btn--light', { 'btn--sm': compact }]} href={contacto.maps_url} target="_blank" rel="noopener">
 			<Icon name="navigation-arrow" size={20} />
 			Cómo llegar
 		</a>
@@ -83,6 +85,33 @@ const contacto = await getContacto();
 			font-size: 1rem;
 			line-height: 1.5rem;
 		}
+	}
+
+	/* Compacto (Inicio): siempre en una columna, con el horario y la dirección más juntos */
+	.info-card--compact {
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--s-200);
+		padding: var(--s-300);
+	}
+
+	.info-card--compact .info-card__part {
+		gap: var(--s-100);
+	}
+
+	.info-card--compact .info-card__part--location {
+		padding: var(--s-200) 0 0;
+		border-left: 0;
+		border-top: 1px solid var(--line);
+	}
+
+	.info-card--compact .info-card__title {
+		font-size: 1.25rem;
+		line-height: 1.75rem;
+	}
+
+	.info-card--compact .info-card__address {
+		font-size: 1rem;
+		line-height: 1.5rem;
 	}
 
 	.info-card__part {

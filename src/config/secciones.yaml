@@ -84,7 +84,7 @@ promociones:
   menu: "Promociones"
   antetitulo: "Promociones"
   titulo: "Ofertas de temporada"
-  subtitulo: "Descuentos en dermofarmacia, protección solar y complementos alimenticios. Consulta las condiciones en la farmacia."
+  subtitulo: "Consulta condiciones en la farmacia."
   tarjetas:
     - titulo: "Lierac"
       texto: "Hasta 40 € de descuento llevando 2 unidades (según la gama)."
@@ -110,7 +110,6 @@ promociones:
       texto: "20 % de descuento en Bisglicinato de magnesio de Solgar."
       descuento: "-20 %"
       etiqueta: "Hasta el 31 de octubre"
-  nota: "Promociones válidas hasta el 31 de octubre de 2026. Consulta condiciones en la farmacia."
   video: { desde: 20.17, hasta: 25.21 }
   provisional: false
 

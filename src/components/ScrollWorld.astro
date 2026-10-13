@@ -31,6 +31,9 @@
 	</div>
 	<div class="world__chapters">
 		<slot />
+		<!-- Escritorio paso a paso: hueco sin contenido tras la última sección, para ver el
+		     último tramo del vídeo encima del pie (el pie compacto ocupa ~1/4 de pantalla) -->
+		<div class="world__outro" aria-hidden="true"></div>
 	</div>
 </div>
 
@@ -79,10 +82,23 @@
 		position: relative;
 		z-index: 1;
 	}
+
+	.world__outro {
+		display: none;
+	}
+
+	:global(html.is-paged) .world__outro {
+		display: block;
+		height: 80vh;
+	}
 </style>
 
 <script>
 	import { mountScrollWorld } from '../scripts/scroll-world';
+	import { mountSectionPager } from '../scripts/section-pager';
 	const root = document.querySelector<HTMLElement>('[data-world]');
-	if (root) mountScrollWorld(root);
+	if (root) {
+		mountScrollWorld(root);
+		mountSectionPager();
+	}
 </script>

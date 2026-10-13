@@ -224,8 +224,10 @@ Las secciones marcadas como "en construcción" llevan un **texto provisional** i
 - **Astro 7** (ya instalado). Usa componentes `.astro` y JavaScript vanilla para el scroll-scrub, sin frameworks salvo que sea imprescindible. Antes de empezar, consulta la documentación de Astro enlazada en `CLAUDE.md`.
 - **Motor scroll-scrub** (del skill scroll-world, adaptado a un solo vídeo):
   - `<video muted playsinline preload="auto" poster=…>`, con la fuente elegida por ancho de pantalla: 540p con todos los fotogramas clave hasta 1024 px o en táctiles, y 1080p por encima. En móvil no se usan `backdrop-filter` ni `filter: blur` sobre el vídeo.
-  - Asocia el progreso del scroll a `video.currentTime` con `requestAnimationFrame` e interpolación suave. No uses `play()`.
-  - Las secciones son bloques de altura suficiente para cubrir su tramo de vídeo, con el contenido superpuesto.
+  - **Por secciones (cambio del 13/10/2026):** cada sección tiene un fotograma de reposo (su `video.desde`). Al entrar en otra sección (su borde superior pasa la mitad de la pantalla), el vídeo va hasta ese fotograma en ~1,5 s, rápido al principio y frenando al llegar: hacia delante con `play()` y `playbackRate` variable; hacia atrás fijando `currentTime` con la misma curva. La última sección (Contáctanos) sigue avanzando con el scroll. Sustituye al mapeo lineal scroll → `currentTime`, que obligaba a hacer mucho scroll para pasar de una escena a otra.
+  - **Escritorio paso a paso** (`src/scripts/section-pager.ts`, solo ratón/trackpad, > 1024 px y sin reducir movimiento): cada gesto de rueda/trackpad o tecla lleva a la sección siguiente en ~0,9 s, a la vez que el vídeo vuela hasta su escena. Las secciones que no caben en la pantalla se recorren con scroll normal y el siguiente gesto salta. Tras Contáctanos, un último paso lleva al final de la página: el final del vídeo en al menos 2/3 de la pantalla y el pie (compacto en escritorio) entero debajo. En móvil y tablet, scroll normal.
+  - El Horario va dentro de Inicio (tarjeta compacta), que ocupa una pantalla y se queda en la fachada.
+  - Probado en Chrome, Firefox y WebKit (escritorio e iPhone emulado) con `puppeteer-core` y Playwright.
   - En iOS, "desbloquea" el vídeo en el primer toque o scroll si hace falta. Comprueba que el scrub funciona en Safari iOS y en Chrome Android.
   - Carga diferida: muestra primero el póster y carga el vídeo enseguida, sin bloquear el LCP.
   - Con `prefers-reduced-motion` o si el vídeo falla, usa el póster como fondo estático.

@@ -134,6 +134,37 @@ const year = new Date().getFullYear();
 		color: rgb(251 253 255 / 0.72);
 	}
 
+	/* Escritorio: pie compacto en una fila (logo, dirección y contactos), para que al llegar
+	   al final de la página el vídeo siga ocupando al menos 2/3 de la pantalla */
+	@media (min-width: 1025px) {
+		.footer {
+			padding: var(--s-400) 0 calc(var(--s-300) + env(safe-area-inset-bottom));
+		}
+		.footer__inner {
+			grid-template-columns: auto minmax(0, 1fr);
+			align-items: center;
+			gap: var(--s-600);
+		}
+		.footer__brand {
+			grid-auto-flow: column;
+			align-items: center;
+			gap: var(--s-500);
+		}
+		.footer__logo :global(.logo) {
+			width: 160px;
+		}
+		.footer__contact {
+			grid-template-columns: repeat(2, max-content);
+			justify-content: end;
+			gap: 0 var(--s-500);
+		}
+		.footer__bottom {
+			align-items: center;
+			margin-top: var(--s-300);
+			padding-top: var(--s-100);
+		}
+	}
+
 	.footer__bottom ul {
 		display: flex;
 		flex-wrap: wrap;

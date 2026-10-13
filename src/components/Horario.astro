@@ -11,13 +11,18 @@ import { getHorario } from '../lib/config';
 interface Props {
 	compact?: boolean;
 	tone?: 'light' | 'dark';
+	/** Plegar las temporadas no vigentes: solo en móvil (por defecto) o siempre. */
+	collapse?: 'mobile' | 'always';
 }
 
-const { compact = false, tone = 'light' } = Astro.props;
+const { compact = false, tone = 'light', collapse = 'mobile' } = Astro.props;
 const horario = await getHorario();
 ---
 
-<div class:list={['horario', { 'horario--compact': compact }, `horario--${tone}`]} data-horario>
+<div
+	class:list={['horario', { 'horario--compact': compact, 'horario--collapse-always': collapse === 'always' }, `horario--${tone}`]}
+	data-horario
+>
 	<p class="horario__status" data-horario-status hidden></p>
 	<div class="horario__grid">
 		{
@@ -205,11 +210,49 @@ const horario = await getHorario();
 		.horario__season {
 			padding: var(--s-200);
 		}
+	}
 
+	.horario--collapse-always.is-collapsible:not(.is-expanded) .horario__season:not(.is-current) {
+		display: none;
+	}
+
+	/* Con plegado siempre, las temporadas desplegadas van una debajo de otra */
+	.horario--collapse-always .horario__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	@media (max-width: 639px) {
 		.horario.is-collapsible:not(.is-expanded) .horario__season:not(.is-current) {
 			display: none;
 		}
+	}
 
+	.horario--collapse-always.is-collapsible .horario__more {
+		justify-self: start;
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-50);
+		min-height: 44px;
+		padding: 0;
+		border: 0;
+		background: none;
+		color: var(--brand);
+		font: inherit;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		font-weight: 700;
+		cursor: pointer;
+	}
+
+	.horario--collapse-always .horario__more :global(.horario__more-icon) {
+		transition: transform 0.5s var(--ease);
+	}
+
+	.horario--collapse-always .horario__more[aria-expanded='true'] :global(.horario__more-icon) {
+		transform: rotate(180deg);
+	}
+
+	@media (max-width: 639px) {
 		.horario.is-collapsible .horario__more {
 			justify-self: start;
 			display: inline-flex;
@@ -321,7 +364,7 @@ const horario = await getHorario();
 	update();
 	setInterval(update, 60_000);
 
-	// Plegar las temporadas no vigentes (solo afecta en móvil, por CSS)
+	// Plegar las temporadas no vigentes (en móvil, o siempre con collapse="always"; por CSS)
 	document.querySelectorAll<HTMLElement>('[data-horario]').forEach((block) => {
 		const more = block.querySelector<HTMLButtonElement>('[data-horario-more]');
 		const label = block.querySelector<HTMLElement>('[data-horario-more-label]');

@@ -55,6 +55,12 @@ html {
 	-webkit-text-size-adjust: 100%;
 }
 
+/* Escritorio con paso a paso por secciones (src/scripts/section-pager.ts): cada sección
+   empieza arriba del todo; su relleno superior ya deja sitio a la cabecera */
+html.is-paged {
+	scroll-padding-top: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	html {
 		scroll-behavior: auto;
