@@ -2,9 +2,9 @@
  * Paso a paso por secciones en escritorio (ratón o trackpad, pantalla > 1024 px).
  *
  * - Cada gesto de rueda/trackpad o tecla (flechas, AvPág/RePág, espacio, Inicio/Fin)
- *   lleva a la sección siguiente o anterior con un deslizamiento de ~0,9 s. El vídeo
- *   de fondo (scroll-world.ts) cambia de escena por su cuenta al pasar la sección
- *   por la mitad de la pantalla, así que ambos se mueven a la vez.
+ *   lleva a la sección siguiente o anterior con un deslizamiento de ~0,9 s. Avisa al
+ *   vídeo de fondo (scroll-world.ts, evento section-pager:go) del destino, para que
+ *   ambos arranquen y lleguen a la vez.
  * - Secciones más altas que la pantalla: dentro de ellas el scroll es el normal hasta
  *   llegar a su final (o a su principio, subiendo); el siguiente gesto salta.
  * - Después de la última sección hay un paso más: el final de la página, con el último
@@ -103,12 +103,17 @@ export function mountSectionPager() {
 		if (Math.abs(to - from) < 1) return;
 		animating = true;
 		guard = null;
+		// El vídeo (scroll-world.ts) arranca ya hacia la escena de destino, sin esperar al scroll
+		window.dispatchEvent(new CustomEvent('section-pager:go', { detail: { y: to } }));
 		const t0 = performance.now();
 		const frame = (now: number) => {
 			const k = Math.min((now - t0) / DURATION, 1);
 			window.scrollTo({ top: from + (to - from) * easeInOut(k), behavior: 'instant' });
 			if (k < 1) requestAnimationFrame(frame);
-			else animating = false;
+			else {
+				animating = false;
+				window.dispatchEvent(new CustomEvent('section-pager:go', { detail: { y: null } }));
+			}
 		};
 		requestAnimationFrame(frame);
 	}

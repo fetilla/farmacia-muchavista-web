@@ -5,8 +5,9 @@
  *   El tramo de una sección es el vuelo de cámara desde su escena hasta la siguiente,
  *   así que el fotograma de reposo de cada sección es su data-video-start.
  * - Sección activa: la última cuyo borde superior ha pasado la mitad de la pantalla
- *   (el mismo criterio que marca la sección en el menú).
- * - Al entrar en otra sección hacia delante, el vídeo se reproduce en ~1,2 s (play nativo, lo
+ *   (el mismo criterio que marca la sección en el menú). En escritorio paso a paso se
+ *   usa la posición de destino del deslizamiento, para que vídeo y página vayan a la vez.
+ * - Al entrar en otra sección hacia delante, el vídeo se reproduce en ~0,85 s, lo que tarda la página en deslizarse (play nativo, lo
  *   más fluido en todos los navegadores) hasta su fotograma, rápido al principio y
  *   frenando al llegar. Hacia atrás no se puede reproducir: se recorre fijando
  *   currentTime. Si el navegador bloquea play() (iOS en ahorro de energía), también
@@ -29,10 +30,10 @@ const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 
 const FPS = 24;
 /** Velocidad máxima y mínima de reproducción en las transiciones hacia delante. */
-const RATE_MAX = 7;
-const RATE_MIN = 1.5;
+const RATE_MAX = 8;
+const RATE_MIN = 3;
 /** Cuánto frena al acercarse (velocidad = segundos que faltan × RATE_K). */
-const RATE_K = 3;
+const RATE_K = 5;
 /** A partir de cuántos segundos de vídeo de distancia se corta en vez de recorrerlo entero. */
 const LONG_JUMP = 7.5;
 /** Segundos que se animan al final de un salto largo. */
@@ -64,13 +65,23 @@ export function mountScrollWorld(root: HTMLElement) {
 		read();
 	}
 
-	/** Posición de scroll → segundo del vídeo en el que debe quedarse. */
+	/** Destino del deslizamiento en curso del paso a paso (section-pager.ts), o null. */
+	let pagerY: number | null = null;
+	window.addEventListener('section-pager:go', (e) => {
+		pagerY = (e as CustomEvent<{ y: number | null }>).detail.y;
+		read();
+	});
+
+	/** Posición de scroll (o la de destino, si la página se está deslizando) → segundo del vídeo. */
 	function read() {
 		if (!stops.length) return;
 		const vh = window.innerHeight;
+		// Desplazamiento entre la posición actual y la de destino
+		const shift = pagerY === null ? 0 : pagerY - window.scrollY;
+		const top = (el: HTMLElement) => el.getBoundingClientRect().top - shift;
 		let i = 0;
 		stops.forEach((s, k) => {
-			if (s.el.getBoundingClientRect().top <= vh * 0.5) i = k;
+			if (top(s.el) <= vh * 0.5) i = k;
 		});
 		const s = stops[i];
 		if (i < stops.length - 1) {
@@ -79,7 +90,7 @@ export function mountScrollWorld(root: HTMLElement) {
 		}
 		// Última sección: su tramo avanza con el scroll. En escritorio paso a paso, mientras
 		// se pasa al final de la página; si no, desde la mitad de la pantalla hasta su final
-		const r = s.el.getBoundingClientRect();
+		const r = { top: top(s.el), height: s.el.getBoundingClientRect().height };
 		const p = document.documentElement.classList.contains('is-paged')
 			? clamp(-r.top / Math.max(r.height - vh * 0.5, 1)) // termina al llegar al final de la página
 			: clamp((vh * 0.5 - r.top) / Math.max(r.height - vh * 0.5, 1));
