@@ -7,7 +7,7 @@
  * - Sección activa: la última cuyo borde superior ha pasado la mitad de la pantalla
  *   (el mismo criterio que marca la sección en el menú). En escritorio paso a paso se
  *   usa la posición de destino del deslizamiento, para que vídeo y página vayan a la vez.
- * - Al entrar en otra sección hacia delante, el vídeo se reproduce en ~0,85 s, lo que tarda la página en deslizarse (play nativo, lo
+ * - Al entrar en otra sección hacia delante, el vídeo se reproduce en ~0,85 s, lo que tarda la página en deslizarse (~0,6 s en móvil; play nativo, lo
  *   más fluido en todos los navegadores) hasta su fotograma, rápido al principio y
  *   frenando al llegar. Hacia atrás no se puede reproducir: se recorre fijando
  *   currentTime. Si el navegador bloquea play() (iOS en ahorro de energía), también
@@ -29,15 +29,20 @@
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 
 const FPS = 24;
-/** Velocidad máxima y mínima de reproducción en las transiciones hacia delante. */
-const RATE_MAX = 8;
-const RATE_MIN = 3;
-/** Cuánto frena al acercarse (velocidad = segundos que faltan × RATE_K). */
-const RATE_K = 5;
-/** A partir de cuántos segundos de vídeo de distancia se corta en vez de recorrerlo entero. */
-const LONG_JUMP = 7.5;
-/** Segundos que se animan al final de un salto largo. */
-const LONG_JUMP_TAIL = 3;
+/**
+ * Ritmo de las transiciones:
+ * - rateMax / rateMin: velocidad máxima y mínima (segundos de vídeo por segundo).
+ * - rateK: cuánto frena al acercarse (velocidad = segundos que faltan × rateK).
+ * - longJump: a partir de cuántos segundos de distancia se corta en vez de recorrerlo entero.
+ * - longJumpTail: segundos que se animan al final de ese corte.
+ * Escritorio: ~0,85 s por tramo, a la vez que el deslizamiento de section-pager.ts.
+ * Móvil: ~0,6 s por tramo y, si el scroll rápido deja al vídeo más de un tramo atrás, corta
+ * hasta cerca del destino (su vídeo tiene todos los fotogramas clave: saltar es barato).
+ */
+const PACE = {
+	desktop: { rateMax: 8, rateMin: 3, rateK: 5, longJump: 7.5, longJumpTail: 3 },
+	mobile: { rateMax: 10, rateMin: 4, rateK: 9, longJump: 5.5, longJumpTail: 1.5 },
+};
 
 export function mountScrollWorld(root: HTMLElement) {
 	const video = root.querySelector<HTMLVideoElement>('[data-world-video]');
@@ -125,11 +130,13 @@ export function mountScrollWorld(root: HTMLElement) {
 		const goal = clamp(target, 0, dur - 0.05);
 		let now = v.currentTime;
 		let diff = goal - now;
+		const mobile = isMobile();
+		const pace = mobile ? PACE.mobile : PACE.desktop;
 
-		// Salto largo (Inicio/Fin, menú): corta hasta cerca del destino y anima solo el final
-		if (Math.abs(diff) > LONG_JUMP && !v.seeking) {
+		// Salto largo (Inicio/Fin, menú, scroll rápido en móvil): corta hasta cerca del destino y anima solo el final
+		if (Math.abs(diff) > pace.longJump && !v.seeking) {
 			stopPlaying();
-			now = cur = goal - Math.sign(diff) * LONG_JUMP_TAIL;
+			now = cur = goal - Math.sign(diff) * pace.longJumpTail;
 			diff = goal - now;
 			seek(now);
 			return;
@@ -138,7 +145,7 @@ export function mountScrollWorld(root: HTMLElement) {
 		// Hacia delante: reproducción nativa
 		if (canPlay && diff > 1 / FPS) {
 			if (v.seeking) return;
-			const rate = Math.round(clamp(diff * RATE_K, RATE_MIN, RATE_MAX) * 4) / 4;
+			const rate = Math.round(clamp(diff * pace.rateK, pace.rateMin, pace.rateMax) * 4) / 4;
 			if (v.playbackRate !== rate) v.playbackRate = rate;
 			if (!playing) {
 				playing = true;
@@ -168,9 +175,8 @@ export function mountScrollWorld(root: HTMLElement) {
 		// Hacia atrás (o sin play): se recorre fijando currentTime, con la misma curva de
 		// velocidad que hacia delante para que dure lo mismo en todos los navegadores
 		// (el tiempo virtual avanza aunque el decodificador siga buscando; el salto se pide al terminar)
-		const mobile = isMobile();
 		const gap = goal - cur;
-		const speed = clamp(Math.abs(gap) * RATE_K, RATE_MIN, RATE_MAX);
+		const speed = clamp(Math.abs(gap) * pace.rateK, pace.rateMin, pace.rateMax);
 		cur += Math.sign(gap) * Math.min(Math.abs(gap), speed * dt);
 		if (Math.abs(goal - cur) < 0.5 / FPS) cur = goal;
 		if (v.seeking) return;
