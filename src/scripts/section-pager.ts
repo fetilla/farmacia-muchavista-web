@@ -5,28 +5,37 @@
  *   lleva a la sección siguiente o anterior con un deslizamiento de ~0,9 s. Avisa al
  *   vídeo de fondo (scroll-world.ts, evento section-pager:go) del destino, para que
  *   ambos arranquen y lleguen a la vez.
+ * - Nada se bloquea: un gesto durante un deslizamiento cuenta desde el destino de ese
+ *   deslizamiento, en cualquier sentido (dos gestos hacia abajo avanzan dos secciones;
+ *   uno hacia arriba vuelve).
  * - Secciones más altas que la pantalla: dentro de ellas el scroll es el normal hasta
  *   llegar a su final (o a su principio, subiendo); el siguiente gesto salta.
  * - Después de la última sección hay un paso más: el final de la página, con el último
  *   tramo del vídeo en al menos 2/3 de la pantalla y el pie entero debajo.
- * - Trackpad: tras un gesto llegan eventos de inercia durante casi un segundo; se
- *   ignoran hasta que hay una pausa o empieza un gesto nuevo, para no saltar varias
- *   secciones de golpe.
+ * - Trackpad: tras soltar los dedos el sistema sigue mandando eventos de inercia durante
+ *   casi un segundo. No son gestos del usuario y se ignoran (si no, un gesto saltaría
+ *   varias secciones). Cuenta como gesto nuevo: una pausa, un empujón más fuerte que la
+ *   inercia, un cambio de sentido o un golpe de rueda de ratón.
  * - Móvil, tablet, pantallas táctiles y prefers-reduced-motion: scroll normal.
  *   Con el paso a paso activo, <html> lleva la clase is-paged (ver global.css).
  */
 
 const DURATION = 900;
 /** Desplazamiento acumulado (px) para que un gesto cuente como cambio de sección. */
-const THRESHOLD = 24;
+const THRESHOLD = 50;
 /** Pausa (ms) sin eventos de rueda que da por terminado un gesto. */
-const GESTURE_GAP = 160;
+const GESTURE_GAP = 220;
+/** Golpe de rueda de ratón: desplazamiento grande y separado del anterior al menos esto (ms). */
+const NOTCH_PX = 50;
+const NOTCH_GAP = 90;
 /** Margen (px) para considerar que se está en el borde de una sección. */
 const EDGE = 4;
 /** Aire (px) que se deja bajo el contenido al llegar al final de una sección alta. */
 const CONTENT_GAP = 16;
 
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+/** Al encadenar un deslizamiento con otro en marcha no se frena a cero: solo sale frenando. */
+const easeOut = (t: number) => 1 - (1 - t) ** 3;
 
 export function mountSectionPager() {
 	const query = window.matchMedia(
@@ -35,13 +44,22 @@ export function mountSectionPager() {
 	const root = document.documentElement;
 
 	let animating = false;
-	/** Tras un salto, se ignoran los eventos de rueda de ese mismo gesto (inercia). */
-	let swallowing = false;
+	/** Destino del deslizamiento en curso. */
+	let animTo = 0;
+	let animId = 0;
+
+	/**
+	 * Estado del gesto de rueda en curso:
+	 * - collecting: gesto nuevo, se acumula desplazamiento hasta THRESHOLD para saltar.
+	 * - inside: gesto recorriendo una sección alta con scroll normal.
+	 * - spent: el gesto ya ha hecho su salto (o ha llegado al borde); lo que llegue de él
+	 *   es inercia y se ignora.
+	 */
+	let mode: 'collecting' | 'inside' | 'spent' = 'collecting';
 	let lastWheel = 0;
 	let lastAbs = 0;
+	let lastDir: 1 | -1 = 1;
 	let acc = 0;
-	/** El gesto en curso está recorriendo una sección alta con scroll normal. */
-	let insideGesture = false;
 
 	const enabled = () => query.matches;
 	const apply = () => root.classList.toggle('is-paged', enabled());
@@ -80,11 +98,13 @@ export function mountSectionPager() {
 
 	type Move = { inside: true; bound: number } | { inside: false; to: number | null };
 
-	/** Dentro de una sección alta: scroll normal hasta su borde. Si no, destino del salto (o null si no hay). */
-	function decide(dir: 1 | -1): Move | null {
+	/**
+	 * Desde la posición y (la actual, o el destino del deslizamiento en curso): dentro de
+	 * una sección alta, scroll normal hasta su borde; si no, destino del salto (o null).
+	 */
+	function decide(dir: 1 | -1, y: number): Move | null {
 		const list = pages();
 		if (!list.length) return null;
-		const y = window.scrollY;
 		const i = current(list, y);
 		const p = list[i];
 		if (dir > 0) {
@@ -98,17 +118,25 @@ export function mountSectionPager() {
 		return { inside: false, to: prev ? prev.end : null };
 	}
 
+	/** Posición desde la que cuenta un gesto: el destino del deslizamiento en curso, o la actual. */
+	const base = () => (animating ? animTo : window.scrollY);
+
 	function animateTo(to: number) {
 		const from = window.scrollY;
 		if (Math.abs(to - from) < 1) return;
+		const chained = animating;
+		const id = ++animId;
 		animating = true;
+		animTo = to;
 		guard = null;
 		// El vídeo (scroll-world.ts) arranca ya hacia la escena de destino, sin esperar al scroll
 		window.dispatchEvent(new CustomEvent('section-pager:go', { detail: { y: to } }));
 		const t0 = performance.now();
+		const ease = chained ? easeOut : easeInOut;
 		const frame = (now: number) => {
+			if (id !== animId) return; // sustituido por otro deslizamiento
 			const k = Math.min((now - t0) / DURATION, 1);
-			window.scrollTo({ top: from + (to - from) * easeInOut(k), behavior: 'instant' });
+			window.scrollTo({ top: from + (to - from) * ease(k), behavior: 'instant' });
 			if (k < 1) requestAnimationFrame(frame);
 			else {
 				animating = false;
@@ -149,6 +177,12 @@ export function mountSectionPager() {
 		{ passive: true },
 	);
 
+	/** Paso dentro de una sección alta mientras otro deslizamiento sigue en marcha. */
+	function stepInside(dir: 1 | -1, from: number, bound: number) {
+		const step = window.innerHeight * 0.85 * dir;
+		animateTo(dir > 0 ? Math.min(from + step, bound) : Math.max(from + step, bound));
+	}
+
 	window.addEventListener(
 		'wheel',
 		(e) => {
@@ -157,39 +191,43 @@ export function mountSectionPager() {
 			const now = performance.now();
 			const gap = now - lastWheel;
 			const abs = Math.abs(e.deltaY);
-			lastWheel = now;
+			const dir: 1 | -1 = e.deltaY > 0 ? 1 : -1;
+			const px = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1);
 
-			if (animating) {
+			// ¿Empieza un gesto nuevo? (si no, es la continuación o la inercia del anterior)
+			const fresh =
+				gap > GESTURE_GAP ||
+				dir !== lastDir ||
+				(abs > lastAbs * 2.5 && abs > 30) ||
+				(e.deltaMode !== 0 || abs >= NOTCH_PX ? gap > NOTCH_GAP && abs >= lastAbs : false);
+			lastWheel = now;
+			lastAbs = abs;
+			lastDir = dir;
+			if (fresh) {
+				mode = 'collecting';
+				acc = 0;
+			}
+
+			if (scrollsInside(e.target, dir)) return;
+			if (mode === 'spent') {
 				e.preventDefault();
-				lastAbs = abs;
 				return;
 			}
-			if (swallowing) {
-				// Sigue la inercia del gesto anterior hasta una pausa o un gesto nuevo (más fuerte)
-				const fresh = gap > GESTURE_GAP || (abs > lastAbs * 1.8 && abs > 20);
-				lastAbs = abs;
-				if (!fresh) {
+
+			const from = base();
+			const move = decide(dir, from);
+			if (!move) return;
+
+			if (move.inside) {
+				if (animating) {
+					// Llega un gesto mientras se desliza hacia una sección alta: un paso dentro de ella
 					e.preventDefault();
+					mode = 'spent';
+					stepInside(dir, from, move.bound);
 					return;
 				}
-				swallowing = false;
-				insideGesture = false;
+				mode = 'inside';
 				acc = 0;
-			}
-			if (gap > GESTURE_GAP) {
-				acc = 0;
-				insideGesture = false;
-			}
-			lastAbs = abs;
-
-			const dir = e.deltaY > 0 ? 1 : -1;
-			if (scrollsInside(e.target, dir)) return;
-			const move = decide(dir);
-			if (!move) return;
-			const px = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1);
-			if (move.inside) {
-				acc = 0;
-				insideGesture = true;
 				guard = { bound: move.bound, dir };
 				clearTimeout(guardTimer);
 				guardTimer = window.setTimeout(() => (guard = null), 600);
@@ -201,18 +239,18 @@ export function mountSectionPager() {
 				}
 				return;
 			}
+
 			e.preventDefault();
 			// El gesto venía de recorrer una sección alta y ha llegado a su borde: se para ahí
-			if (insideGesture && gap <= GESTURE_GAP) {
-				swallowing = true;
+			if (mode === 'inside') {
+				mode = 'spent';
 				return;
 			}
-			insideGesture = false;
 			if (move.to === null) return;
 			acc += px;
 			if (Math.abs(acc) < THRESHOLD) return;
 			acc = 0;
-			swallowing = true;
+			mode = 'spent';
 			animateTo(move.to);
 		},
 		{ passive: false },
@@ -240,7 +278,6 @@ export function mountSectionPager() {
 			case 'Home':
 			case 'End': {
 				e.preventDefault();
-				if (animating) return;
 				const list = pages();
 				animateTo(e.key === 'Home' ? 0 : list[list.length - 1].top);
 				return;
@@ -248,19 +285,14 @@ export function mountSectionPager() {
 			default:
 				return;
 		}
-		if (animating) {
-			e.preventDefault();
-			return;
-		}
-		const move = decide(dir);
+		const from = base();
+		const move = decide(dir, from);
 		if (!move) return;
 		if (move.inside) {
-			// Flechas: scroll normal. Página/espacio: una pantalla, sin pasarse del borde de la sección
-			if (e.key.startsWith('Arrow')) return;
+			// Flechas sin deslizamiento en marcha: scroll normal. Si no, una pantalla, sin pasarse del borde
+			if (e.key.startsWith('Arrow') && !animating) return;
 			e.preventDefault();
-			const step = window.innerHeight * 0.85 * dir;
-			const y = window.scrollY;
-			animateTo(dir > 0 ? Math.min(y + step, move.bound) : Math.max(y + step, move.bound));
+			stepInside(dir, from, move.bound);
 			return;
 		}
 		e.preventDefault();
