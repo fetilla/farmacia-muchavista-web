@@ -31,17 +31,6 @@ inicio:
   video: { desde: 0, hasta: 5.04 }
   provisional: true
 
-nosotros:
-  menu: "Nosotros"
-  antetitulo: "Nosotros"
-  titulo: "Un equipo que te conoce por tu nombre"
-  parrafos:
-    - "Desde nuestro mostrador acompañamos a vecinos y veraneantes con la misma calma: escuchando primero y recomendando después."
-    - "Elena Pérez Belda y su equipo combinan formación sanitaria continua con algo que no se aprende en los libros: el trato de una farmacia de barrio."
-  lema: "Cercanía, pasión y profesión"
-  video: { desde: 5.04, hasta: 10.08 }
-  provisional: true
-
 servicios:
   menu: "Servicios"
   antetitulo: "Servicios"
@@ -69,15 +58,7 @@ servicios:
     - titulo: "Botiquín de playa"
       texto: "Picaduras, quemaduras solares o pequeñas heridas: te preparamos lo necesario para tus vacaciones."
       icono: "first-aid-kit"
-  video: { desde: 10.08, hasta: 15.13 }
-  provisional: true
-
-marcas:
-  menu: "Marcas"
-  antetitulo: "Marcas"
-  titulo: "Marcas en las que confiamos"
-  subtitulo: "Seleccionamos cada línea de producto por su eficacia y te ayudamos a elegir la que mejor encaja contigo."
-  video: { desde: 15.13, hasta: 20.17 }
+  video: { desde: 5.04, hasta: 10.08 }
   provisional: true
 
 promociones:
@@ -110,8 +91,19 @@ promociones:
       texto: "20 % de descuento en Bisglicinato de magnesio de Solgar."
       descuento: "-20 %"
       etiqueta: "Hasta el 31 de octubre"
-  video: { desde: 20.17, hasta: 25.21 }
+  video: { desde: 10.08, hasta: 15.13 }
   provisional: false
+
+nosotros:
+  menu: "Nosotros"
+  antetitulo: "Nosotros"
+  titulo: "Un equipo que te conoce por tu nombre"
+  parrafos:
+    - "Desde nuestro mostrador acompañamos a vecinos y veraneantes con la misma calma: escuchando primero y recomendando después."
+    - "Elena Pérez Belda y su equipo combinan formación sanitaria continua con algo que no se aprende en los libros: el trato de una farmacia de barrio."
+  lema: "Cercanía, pasión y profesión"
+  video: { desde: 15.13, hasta: 20.17 }
+  provisional: true
 
 actualidad:
   menu: "Actualidad"
@@ -126,8 +118,16 @@ actualidad:
       texto: "Incorporamos Kiokids, con accesorios de puericultura para el día a día del bebé: alimentación, dentición, baño e higiene."
       icono: "baby"
       enlace: { texto: "Ver en Marcas", seccion: "marcas", categoria: "Bebé y maternidad", marca: "Kiokids" }
-  video: { desde: 25.21, hasta: 30.25 }
+  video: { desde: 20.17, hasta: 25.21 }
   provisional: false
+
+marcas:
+  menu: "Marcas"
+  antetitulo: "Marcas"
+  titulo: "Marcas en las que confiamos"
+  subtitulo: "Seleccionamos cada línea de producto por su eficacia y te ayudamos a elegir la que mejor encaja contigo."
+  video: { desde: 25.21, hasta: 30.25 }
+  provisional: true
 
 contacto:
   menu: "Contáctanos"

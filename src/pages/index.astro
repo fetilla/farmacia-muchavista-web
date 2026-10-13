@@ -21,24 +21,24 @@ const s = await getSecciones();
 		<ScrollWorld>
 			<Hero />
 
-			<Chapter id="nosotros" seccion={s.nosotros}>
-				{s.nosotros.lema && <TaglineReveal text={s.nosotros.lema} size="lema" />}
-			</Chapter>
-
-			<Chapter id="servicios" seccion={s.servicios} align="right">
+			<Chapter id="servicios" seccion={s.servicios}>
 				{s.servicios.tarjetas && <Cards tarjetas={s.servicios.tarjetas} variant="service" />}
-			</Chapter>
-
-			<Chapter id="marcas" seccion={s.marcas}>
-				<Marcas />
 			</Chapter>
 
 			<Chapter id="promociones" seccion={s.promociones} align="right">
 				{s.promociones.tarjetas && <Cards tarjetas={s.promociones.tarjetas} variant="promo" />}
 			</Chapter>
 
-			<Chapter id="actualidad" seccion={s.actualidad}>
+			<Chapter id="nosotros" seccion={s.nosotros}>
+				{s.nosotros.lema && <TaglineReveal text={s.nosotros.lema} size="lema" />}
+			</Chapter>
+
+			<Chapter id="actualidad" seccion={s.actualidad} align="right">
 				{s.actualidad.tarjetas && <Cards tarjetas={s.actualidad.tarjetas} variant="news" />}
+			</Chapter>
+
+			<Chapter id="marcas" seccion={s.marcas}>
+				<Marcas />
 			</Chapter>
 
 			<Contacto />

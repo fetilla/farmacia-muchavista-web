@@ -5,7 +5,7 @@ import { getContacto, getSecciones } from '../lib/config';
 
 const contacto = await getContacto();
 const secciones = await getSecciones();
-const links = (['inicio', 'nosotros', 'servicios', 'marcas', 'promociones', 'actualidad'] as const).map((id) => ({
+const links = (['inicio', 'servicios', 'promociones', 'nosotros', 'actualidad', 'marcas'] as const).map((id) => ({
 	id,
 	label: secciones[id].menu,
 }));

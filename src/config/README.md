@@ -8,7 +8,7 @@ Cada fichero `.yaml` es texto normal: ábrelo, cambia el valor entre comillas y 
 | `contacto.yaml` | Nombre, dirección, enlace de Google Maps, WhatsApp, teléfono, Instagram y correo |
 | `horario.yaml` | Horario de invierno y de verano, y qué fechas aplica cada uno |
 | `marcas.yaml` | Las marcas de la sección "Marcas" |
-| `secciones.yaml` | Los textos de Inicio, Nosotros, Servicios, Marcas, Promociones, Actualidad y Contáctanos, y el tramo de vídeo de cada sección |
+| `secciones.yaml` | Los textos de Inicio, Servicios, Promociones, Nosotros, Actualidad, Marcas y Contáctanos, y el tramo de vídeo de cada sección |
 
 ## Cómo ver los cambios
 
