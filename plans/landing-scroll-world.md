@@ -19,7 +19,7 @@ Diseña e implementa con Astro la landing page de **Farmacia Muchavista** usando
 
 | Archivo | Uso |
 |---|---|
-| `public/video/farmacia-walkthrough-1080.mp4` | Vídeo de fondo en escritorio. 1920×1080, 24 fps, 35,3 s, sin audio, H.264, 10,4 MB, keyframe cada 24 fotogramas, faststart |
+| `public/video/farmacia-walkthrough-1080.mp4` | Vídeo de fondo en escritorio. 1920×1080, 24 fps, 35,3 s, sin audio, H.264, 15,6 MB, keyframe cada 6 fotogramas y sin B-frames (saltos más rápidos en Firefox), faststart |
 | `public/video/farmacia-walkthrough-portrait.mp4` | Móvil en vertical. Recorte central 608×1080 del máster v4 (la franja que se ve en un móvil en vertical), todos los fotogramas clave, 12,7 MB. Sustituye en vertical al de 540p, que se veía pixelado al ampliarse |
 | `public/video/farmacia-walkthrough-mobile.mp4` | Vídeo de fondo en móvil y tablet. 960×540, todos los fotogramas clave (scrub fluido en móvil), 11,2 MB. Sustituye al antiguo 720p (GOP 24), que daba tirones en móvil |
 | `public/video/farmacia-walkthrough-poster.webp` / `.jpg` | Póster: primer fotograma, la fachada. Mostrar mientras carga el vídeo |
@@ -267,7 +267,7 @@ Todo está fuera de git (en `.gitignore`), solo como referencia por si hace falt
   - En la prueba gratuita, Higgsfield solo permite generar a través del **MCP**, no desde la CLI.
   - Coste: 6,25 créditos por clip.
 - **Compresión web:**
-  - 1080p: `hqdn3d=2:2:5:5`, libx264 `-crf 31 -g 24 -preset veryslow -movflags +faststart`, sin audio.
+  - 1080p: `hqdn3d=2:2:5:5`, libx264 `-preset veryslow -tune fastdecode -crf 32 -g 6 -keyint_min 6 -sc_threshold 0 -bf 0 -movflags +faststart`, sin audio. Frente a GOP 24, en Firefox los saltos bajan de ~19 a ~15 ms de mediana y de ~30 a ~20 ms en el p90.
   - Móvil vertical: `crop=608:1080:(iw-608)/2:0,hqdn3d=1:1:3:3`, libx264 `-tune fastdecode -profile:v main -crf 30 -g 1 -bf 0 -movflags +faststart`, sin audio.
   - Móvil: `hqdn3d=3:3:6:6`, escalado a 960×540, libx264 `-tune fastdecode -profile:v main -crf 32 -g 1 -bf 0 -movflags +faststart` (todos los fotogramas clave), sin audio.
 - **Fotos originales:** la carpeta `public/pictures/video/` con las 8 fotos originales ya no existe en el proyecto. Si hicieran falta, hay que recuperarlas de su fuente.

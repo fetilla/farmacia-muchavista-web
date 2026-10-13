@@ -124,6 +124,8 @@ export function mountScrollWorld(root: HTMLElement) {
 			ready = false;
 			if (blobUrl) URL.revokeObjectURL(blobUrl);
 			blobUrl = url.startsWith('blob:') ? url : '';
+			// Firefox respeta preload="none" y no llegaría a cargar ni los metadatos
+			video!.preload = 'auto';
 			video!.src = url;
 		};
 		fetch(src)
